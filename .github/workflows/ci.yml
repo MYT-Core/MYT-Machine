@@ -1,0 +1,94 @@
+name: Phase 4A Machine Settlement
+
+on:
+  push: {}
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux / Python 3.10
+            os: ubuntu-latest
+            python: '3.10'
+          - name: Linux / Python 3.12
+            os: ubuntu-latest
+            python: '3.12'
+          - name: Linux / Python 3.13
+            os: ubuntu-latest
+            python: '3.13'
+          - name: Windows / Python 3.12
+            os: windows-latest
+            python: '3.12'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install package
+        run: python -m pip install --disable-pip-version-check -e .
+      - name: Unit and CLI tests
+        run: python -m unittest discover -s tests -v
+      - name: Compile modules
+        run: python -m compileall -q src tests
+
+  package:
+    name: Build wheel and source distribution
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build frontend
+        run: python -m pip install --disable-pip-version-check build
+      - name: Build distributions
+        run: python -m build . --outdir dist
+      - name: Verify wheel metadata has no runtime dependencies
+        run: |
+          python - <<'PY'
+          import glob
+          import zipfile
+
+          wheel = glob.glob('dist/*.whl')
+          assert len(wheel) == 1, wheel
+          with zipfile.ZipFile(wheel[0]) as archive:
+              metadata_name = next(name for name in archive.namelist() if name.endswith('/METADATA'))
+              metadata = archive.read(metadata_name).decode('utf-8')
+          assert '\nRequires-Dist:' not in metadata
+          PY
+      - name: Smoke-test installed wheel
+        run: |
+          python -m venv /tmp/myt-machine-wheel
+          /tmp/myt-machine-wheel/bin/python -m pip install --no-index dist/*.whl
+          set +e
+          /tmp/myt-machine-wheel/bin/myt-machine --rpc-url ftp://127.0.0.1 status > /tmp/smoke.json
+          code=$?
+          set -e
+          test "$code" -eq 3
+          /tmp/myt-machine-wheel/bin/python - <<'PY'
+          import json
+
+          with open('/tmp/smoke.json', encoding='utf-8') as stream:
+              payload = json.load(stream)
+          assert payload['schema_version'] == 1
+          assert payload['command'] == 'status'
+          assert payload['success'] is False
+          assert payload['error']['code'] == 'invalid_configuration'
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: myt-machine-settlement-v0.1.0
+          path: dist/*
+          if-no-files-found: error

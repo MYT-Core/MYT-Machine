@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "myt-machine-settlement"
+version = "0.1.0"
+description = "Machine-facing settlement SDK and CLI for MYT wallet RPC"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = "MYT-Core" }]
+dependencies = []
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+
+[project.scripts]
+myt-machine = "myt_machine.cli:entrypoint"
+
+[project.urls]
+Homepage = "https://github.com/MYT-Core/MYT-Machine"
+Repository = "https://github.com/MYT-Core/MYT-Machine"
+Issues = "https://github.com/MYT-Core/MYT-Machine/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
