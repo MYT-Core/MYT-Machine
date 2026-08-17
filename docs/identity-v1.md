@@ -1,6 +1,7 @@
 # MYT Machine Identity Protocol v1
 
-Status: Phase 4B, implemented by `myt-machine-settlement` v0.2.0.
+Status: Phase 4B, introduced by `myt-machine-settlement` v0.2.0 and unchanged
+in v0.3.0.
 
 This document defines a small offline identity and signature protocol for
 machines and agents. It does not define wallet ownership, payments, reputation,

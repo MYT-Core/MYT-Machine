@@ -1,4 +1,4 @@
-# MYT Machine Settlement and Identity SDK/CLI
+# MYT Machine Settlement, Identity, and Address Binding SDK/CLI
 
 [![CI](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml/badge.svg)](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml)
 
@@ -9,19 +9,24 @@
   `myt-wallet-rpc`.
 - Phase 4B: offline Ed25519 machine identities, signatures, and
   challenge-response building blocks that do not use a wallet or network.
+- Phase 4C: selectively disclosed, two-sided cryptographic bindings between a
+  Machine Identity and an MYT settlement address.
 
-Version `0.2.0` does not change consensus, emission, HF17, network parameters,
-or wallet RPC schemas. The Phase 4A interface remains backward compatible.
+Version `0.3.0` does not change MYT Core, consensus, emission, HF17, network
+parameters, blockchain state, or wallet RPC schemas. The Phase 4A and Phase 4B
+interfaces remain backward compatible.
 
 ## Requirements
 
 - Python 3.10 or newer
 - `cryptography>=50.0.0`
-- For settlement commands only: a running `myt-wallet-rpc` with HTTP Digest
+- For settlement commands: a running `myt-wallet-rpc` with HTTP Digest
   Authentication and a synchronized MYT daemon
+- For `binding create` and `binding verify`: a trusted Wallet RPC on the
+  binding network; these commands do not require a daemon or blockchain access
 
-Identity commands are fully offline. They do not require wallet RPC, a daemon,
-a blockchain, Testnet, Mainnet, or internet access.
+Identity commands and `binding show` are fully offline. They do not require
+wallet RPC, a daemon, a blockchain, Testnet, Mainnet, or internet access.
 
 ## Install
 
@@ -42,8 +47,9 @@ On PowerShell, activate the environment with:
 
 ## Security Model
 
-The complete identity protocol and threat boundaries are documented in
-[`docs/identity-v1.md`](docs/identity-v1.md).
+The complete protocol and threat boundaries are documented in
+[`docs/identity-v1.md`](docs/identity-v1.md) and
+[`docs/address-binding-v1.md`](docs/address-binding-v1.md).
 
 - Wallet RPC passwords cannot be supplied with a CLI argument.
 - Use `--rpc-password-file` or `MYT_WALLET_RPC_PASSWORD`.
@@ -65,6 +71,8 @@ The complete identity protocol and threat boundaries are documented in
   transaction hex, and transaction metadata are never returned.
 - A payment is submitted exactly once by the SDK. It is never retried after a
   timeout or malformed response.
+- The Wallet RPC `sign` request used by `binding create` is also submitted
+  exactly once and is never retried automatically.
 - Identity private keys are encrypted PKCS8 PEM files and are never written to
   normal output.
 - Identity passphrases are accepted only through a protected file or an
@@ -72,10 +80,19 @@ The complete identity protocol and threat boundaries are documented in
   variable.
 - Identity operations reject malformed and non-canonical IDs, public keys,
   signatures, and challenge encodings before verification.
+- Subaddresses are the binding privacy default. Binding the primary standard
+  address requires explicit `--allow-standard-address`; Integrated Addresses
+  are unsupported.
+- Binding artifacts are selectively disclosed public material. Sharing one
+  intentionally links its Machine ID and settlement address.
 
-If communication fails after `transfer` may have reached the wallet, the error
-contains `"outcome_unknown": true`. Do not immediately send the payment again.
-First inspect the sender wallet or reconcile by invoice and destination.
+`binding create` requires an unrestricted, opened, spend-key-capable Wallet
+RPC. Use loopback or strongly protected authenticated and encrypted transport.
+Never expose such an RPC without protection to an untrusted network.
+
+If communication fails after `transfer` or binding `sign` may have reached the
+wallet, the error contains `"outcome_unknown": true`. Do not immediately repeat
+the operation. Reconcile the payment or review the binding attempt first.
 
 ## Configuration
 
@@ -111,7 +128,7 @@ MYT_WALLET_RPC_TIMEOUT
 ```
 
 CLI values take precedence over environment values, which take precedence over
-defaults. The account and address indexes remain CLI-only in v0.2.
+defaults. The account and address indexes remain CLI-only in v0.3.
 
 Example using a protected password file:
 
@@ -147,6 +164,9 @@ myt-machine identity create --private-key-file <FILE> --identity-file <FILE> [--
 myt-machine identity show --identity-file <FILE>
 myt-machine identity sign --private-key-file <FILE> --identity-file <FILE> [--passphrase-file <FILE>] --context <CONTEXT> (--message <TEXT> | --message-file <FILE|-> | --nonce-base64url <NONCE>)
 myt-machine identity verify --identity-file <FILE> [--expected-machine-id <ID>] --context <CONTEXT> --signature <SIGNATURE> (--message <TEXT> | --message-file <FILE|-> | --nonce-base64url <NONCE>)
+myt-machine [RPC OPTIONS] binding create --private-key-file <FILE> --identity-file <FILE> --binding-file <FILE> [--passphrase-file <FILE>] [--allow-standard-address]
+myt-machine binding show --binding-file <FILE|->
+myt-machine [RPC OPTIONS] binding verify --binding-file <FILE|-> [--expected-machine-id <ID>] [--expected-network mainnet|testnet|stagenet]
 ```
 
 Every normal invocation writes exactly one compact JSON document and one
@@ -259,6 +279,78 @@ There is no artificial upper bound because pyca documents API stability for
 the APIs used here. Users who build `cryptography` from source remain
 responsible for linking it against a patched, supported OpenSSL version.
 
+## Machine Identity Address Binding
+
+A Binding v1 artifact contains an embedded Phase 4B public identity, an MYT
+network and address, a Phase 4B identity signature, and a native MYT SigV2
+spend signature. Both signatures authorize the exact same canonical binding
+payload. Their final cryptographic inputs differ because Phase 4B and native
+MYT SigV2 retain their existing domain separation.
+
+A valid binding proves that the controllers of the Machine Identity key and
+the MYT settlement-address spend key both authorized the same canonical
+binding statement. It does not prove when that authorization occurred, current
+liveness, continued key control, or exclusivity of key control. Use a fresh
+Phase 4B challenge to check current Machine Identity liveness.
+
+Create a binding for a dedicated subaddress. Global options must precede the
+`binding` command, and the selected subaddress must already exist in the opened
+wallet:
+
+```bash
+myt-machine \
+  --rpc-url http://127.0.0.1:38083 \
+  --rpc-user agent-b \
+  --rpc-password-file /secure/agent-b.rpc-password \
+  --account-index 0 \
+  --address-index 1 \
+  binding create \
+  --private-key-file identity/machine-key.pem \
+  --identity-file identity/machine-identity.json \
+  --binding-file identity/testnet-binding.json \
+  --passphrase-file identity/passphrase
+```
+
+This command needs an unrestricted, open, spend-key-capable Wallet RPC. Keep it
+on loopback or behind strongly protected authenticated and encrypted transport.
+Do not expose it unprotected to an untrusted network. The native Wallet RPC
+`sign` request is sent exactly once and is never automatically retried.
+
+The primary standard address at account `0`, address `0` is rejected unless
+`--allow-standard-address` is explicitly supplied. Integrated Addresses are
+unsupported in Address Binding v1.
+
+Inspect an artifact without Wallet RPC:
+
+```bash
+myt-machine binding show --binding-file identity/testnet-binding.json
+cat identity/testnet-binding.json | myt-machine binding show --binding-file -
+```
+
+Verify it with an independent wallet opened on the same network:
+
+```bash
+myt-machine \
+  --rpc-url http://127.0.0.1:38084 \
+  --rpc-user verifier \
+  --rpc-password-file /secure/verifier.rpc-password \
+  binding verify \
+  --binding-file identity/testnet-binding.json \
+  --expected-machine-id "$EXPECTED_MACHINE_ID" \
+  --expected-network testnet
+```
+
+The verifier wallet does not need the bound address's private keys and does not
+need a daemon or blockchain connection. A fresh or watch-only wallet on the
+same network is sufficient for native SigV2 verification. Without an
+independently expected Machine ID, the command verifies signatures but does not
+claim Machine Identity authentication.
+
+Bindings are timeless and have no expiry or revocation mechanism. They are
+never published automatically or placed on-chain. Disclosure is an explicit
+privacy decision and creates linkability between the Machine ID and address for
+every recipient of the artifact.
+
 ## Payment Proof Artifact
 
 `prove-payment` returns the native proof unchanged from MYT wallet RPC. The
@@ -340,6 +432,31 @@ verification = public_identity.verify(
 assert verification.authentication_valid is True
 ```
 
+Address Binding v1 is available through the SDK:
+
+```python
+from myt_machine import (
+    AddressBindingService,
+    load_address_binding,
+    load_private_identity,
+    save_address_binding,
+)
+
+identity = load_private_identity("identity/machine-key.pem", passphrase_bytes)
+creator = AddressBindingService(wallet_rpc_client, account_index=0, address_index=1)
+binding = creator.create(identity)
+save_address_binding(binding, "identity/testnet-binding.json")
+
+public_binding = load_address_binding("identity/testnet-binding.json")
+verifier = AddressBindingService(independent_testnet_wallet_rpc_client)
+result = verifier.verify(
+    public_binding,
+    expected_machine_id=pinned_machine_id,
+    expected_network="testnet",
+)
+assert result.authentication_valid is True
+```
+
 ## Testnet End-to-End Runbook
 
 This procedure submits a real Testnet payment. Use disposable wallets and do
@@ -350,6 +467,11 @@ not reuse production wallet or RPC credentials.
 Create two disposable Testnet wallets with `myt-wallet-cli --testnet`. Fund the
 sender with more than `0.1 MYT` plus the transaction fee. Wait until both
 wallets and the connected Testnet daemon are synchronized.
+
+In receiver wallet B, create a dedicated subaddress and record its account and
+address index. The examples below use account `0`, address index `1`. Do not use
+an Integrated Address. Wallet B RPC must be unrestricted and spend-key-capable
+for `binding create`; never expose it unprotected to an untrusted network.
 
 Place each wallet password in a different mode-`0600` file. In two terminals,
 start wallet RPC on loopback. Supplying only the username to `--rpc-login`
@@ -394,6 +516,7 @@ The examples use shell arrays so global options are always placed correctly:
 ```bash
 A=(myt-machine --rpc-url http://127.0.0.1:38083 --rpc-user agent-a --rpc-password-file /secure/agent-a.rpc-password)
 B=(myt-machine --rpc-url http://127.0.0.1:38084 --rpc-user agent-b --rpc-password-file /secure/agent-b.rpc-password)
+B_BIND=("${B[@]}" --account-index 0 --address-index 1)
 ```
 
 ### 3. Check status and addresses
@@ -407,9 +530,80 @@ B=(myt-machine --rpc-url http://127.0.0.1:38084 --rpc-user agent-b --rpc-passwor
 "${B[@]}" address
 ```
 
-Record the receiver address as `RECIPIENT`.
+Confirm that `"${B_BIND[@]}" address` returns the dedicated receiver
+subaddress.
 
-### 4. Send and confirm 0.1 MYT
+### 4. Create Machine Identity B and its address binding
+
+```bash
+umask 077
+E2E=phase4c-testnet-e2e
+mkdir "$E2E"
+read -rsp 'Disposable identity passphrase: ' PASSPHRASE
+printf '\n'
+printf '%s\n' "$PASSPHRASE" > "$E2E/passphrase"
+chmod 600 "$E2E/passphrase"
+
+myt-machine identity create \
+  --private-key-file "$E2E/machine-b-key.pem" \
+  --identity-file "$E2E/machine-b-identity.json" \
+  --passphrase-file "$E2E/passphrase" > "$E2E/identity-create.json"
+
+MACHINE_ID=$(python -c \
+  'import json,sys; print(json.load(open(sys.argv[1]))["machine_id"])' \
+  "$E2E/identity-create.json")
+
+"${B_BIND[@]}" binding create \
+  --private-key-file "$E2E/machine-b-key.pem" \
+  --identity-file "$E2E/machine-b-identity.json" \
+  --binding-file "$E2E/machine-b-testnet-binding.json" \
+  --passphrase-file "$E2E/passphrase" > "$E2E/binding-create.json"
+
+"${A[@]}" binding verify \
+  --binding-file "$E2E/machine-b-testnet-binding.json" \
+  --expected-machine-id "$MACHINE_ID" \
+  --expected-network testnet > "$E2E/binding-verify.json"
+
+RECIPIENT=$(myt-machine binding show \
+  --binding-file "$E2E/machine-b-testnet-binding.json" | \
+  python -c 'import json,sys; print(json.load(sys.stdin)["binding"]["address"])')
+```
+
+The verification result must report `identity_signature_valid: true`,
+`wallet_signature_valid: true`, `wallet_signature_version: 2`,
+`wallet_signature_type: "spend"`, `binding_valid: true`,
+`authentication_valid: true`, and `valid: true`.
+
+### 5. Authenticate current Machine Identity liveness
+
+The binding is timeless, so authenticate Machine B separately with a fresh
+32-byte challenge. The verifier must store and atomically consume the nonce in
+a real application.
+
+```bash
+CHALLENGE=$(openssl rand 32 | python -c \
+  'import base64,sys; print(base64.urlsafe_b64encode(sys.stdin.buffer.read()).decode().rstrip("="))')
+
+IDENTITY_SIGNATURE=$(myt-machine identity sign \
+  --private-key-file "$E2E/machine-b-key.pem" \
+  --identity-file "$E2E/machine-b-identity.json" \
+  --passphrase-file "$E2E/passphrase" \
+  --context myt-machine/auth/v1/phase4c-testnet \
+  --nonce-base64url "$CHALLENGE" | \
+  python -c 'import json,sys; print(json.load(sys.stdin)["signature"])')
+
+myt-machine identity verify \
+  --identity-file "$E2E/machine-b-identity.json" \
+  --expected-machine-id "$MACHINE_ID" \
+  --context myt-machine/auth/v1/phase4c-testnet \
+  --nonce-base64url "$CHALLENGE" \
+  --signature "$IDENTITY_SIGNATURE" > "$E2E/challenge-verify.json"
+```
+
+Require `signature_valid: true`, `identity_matches: true`,
+`authentication_valid: true`, and `valid: true` before payment.
+
+### 6. Send and confirm 0.1 MYT
 
 ```bash
 "${A[@]}" pay --address "$RECIPIENT" --amount 0.1
@@ -423,7 +617,7 @@ at least one Testnet block. The final result must report `found: true`,
 `payment-status` is wallet-local. It only finds transactions known to the
 opened wallet and is not a global explorer lookup.
 
-### 5. Create and verify a payment proof
+### 7. Create and verify a payment proof
 
 ```bash
 "${A[@]}" prove-payment \
@@ -437,7 +631,7 @@ opened wallet and is not a global explorer lookup.
 The receiver must report `valid: true`, the expected received amount, and the
 current confirmation count.
 
-### 6. Sign and verify a message
+### 8. Sign and verify a native wallet message
 
 ```bash
 "${A[@]}" sign-message --message phase4a-agent-a
@@ -450,14 +644,29 @@ current confirmation count.
 Record `address` and `signature` from the signing result as `SENDER` and
 `SIGNATURE`. Verification must return `valid: true`.
 
-### 7. Negative and transport tests
+### 9. Negative, substitution, and transport tests
 
-- Change one character in the proof, message, address, and signature separately.
+- Change the challenge, binding address, binding network, Machine ID,
+  identity signature, wallet signature, TXID, and payment proof separately.
 - Each validly formed but incorrect verification must return `valid: false` and
   exit code `1`.
+- A non-canonical challenge or malformed binding must return exit code `2`.
 - Use a wrong Digest Auth password and verify structured exit code `4` output.
 - Use an unused loopback port and verify structured exit code `4` output.
 - Search captured output for the test passwords and verify neither appears.
+
+While `PASSPHRASE` is still set, include these release checks:
+
+```bash
+! grep -lF 'must-not-appear' "$E2E"/*.json
+! grep -lF -- "$PASSPHRASE" "$E2E"/*.json
+unset PASSPHRASE
+```
+
+The final release gate is successful only when Machine Identity creation,
+binding creation, expected-ID and expected-network verification, fresh
+challenge authentication, a real `0.1 MYT` payment, confirmation, native
+`OutProofV2` creation, and proof verification all succeed in this order.
 
 Record wallet heights, TXID, confirmation count, command outputs with secrets
 removed, package version, and the Git commit used for the run.
@@ -467,8 +676,9 @@ removed, package version, and the Git commit used for the run.
 - No wallet creation, wallet opening, seed management, or wallet-key management
 - No automatic payment retry or payment idempotency
 - No global blockchain transaction search
-- No marketplace, reputation, identity discovery, revocation, or key rotation
-- No binding between a Machine ID and an MYT wallet address
+- No marketplace, reputation, global binding registry, or identity discovery
+- No binding expiry, revocation, address rotation, or key rotation
+- No Integrated Address support in Address Binding v1
 - No consensus, daemon, HF17, emission, or network parameter changes
 
 ## Development
@@ -482,5 +692,6 @@ PYTHONPATH=src \
 
 The GitHub Actions workflow tests Python 3.10, 3.12, and 3.13 on Linux and
 Windows against both the dependency floor and latest compatible
-`cryptography`. It also audits dependencies, compiles all modules, and builds
-and smoke-tests both a wheel and source distribution.
+`cryptography`. It also runs Ruff and Bandit, audits dependencies, compiles all
+modules, validates package metadata, and builds and smoke-tests both a wheel
+and source distribution.

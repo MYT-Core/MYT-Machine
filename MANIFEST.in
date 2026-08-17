@@ -1,2 +1,4 @@
 include docs/identity-v1.md
 include docs/identity-v1-test-vector.json
+include docs/address-binding-v1.md
+include docs/address-binding-v1-test-vector.json

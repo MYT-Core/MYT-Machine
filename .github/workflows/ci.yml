@@ -1,4 +1,4 @@
-name: MYT Machine Settlement and Identity
+name: MYT Machine Settlement, Identity, and Address Binding
 
 on:
   push: {}
@@ -56,10 +56,14 @@ jobs:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: pyproject.toml
-      - name: Install package and pip-audit
-        run: python -m pip install --disable-pip-version-check -e . pip-audit
+      - name: Install package and security tooling
+        run: python -m pip install --disable-pip-version-check -e . pip-audit bandit ruff
       - name: Audit installed dependencies
         run: python -m pip_audit
+      - name: Static checks
+        run: |
+          ruff check src tests
+          bandit -q -r src/myt_machine
 
   package:
     name: Build and smoke-test wheel and source distribution
@@ -70,8 +74,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Install build frontend
-        run: python -m pip install --disable-pip-version-check build
+      - name: Install build frontends
+        run: python -m pip install --disable-pip-version-check build twine
       - name: Build distributions
         run: python -m build . --outdir dist
       - name: Verify wheel metadata
@@ -82,7 +86,7 @@ jobs:
 
           wheel = glob.glob('dist/*.whl')
           assert len(wheel) == 1, wheel
-          assert wheel[0].endswith('myt_machine_settlement-0.2.0-py3-none-any.whl'), wheel
+          assert wheel[0].endswith('myt_machine_settlement-0.3.0-py3-none-any.whl'), wheel
           with zipfile.ZipFile(wheel[0]) as archive:
               metadata_name = next(name for name in archive.namelist() if name.endswith('/METADATA'))
               metadata = archive.read(metadata_name).decode('utf-8')
@@ -92,13 +96,17 @@ jobs:
           PY
       - name: Verify source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.2.0.tar.gz | grep '/docs/identity-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.2.0.tar.gz | grep '/docs/identity-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/identity-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/identity-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/address-binding-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
+      - name: Check distribution metadata
+        run: python -m twine check dist/*
       - name: Smoke-test installed wheel
         run: |
           python -m venv /tmp/myt-machine-wheel
           /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check dist/*.whl
-          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.2.0"
+          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.3.0"
 
           work=$(mktemp -d)
           trap 'rm -rf "$work"' EXIT
@@ -125,6 +133,37 @@ jobs:
             --message offline-smoke \
             --signature "$signature" > "$work/verify.json"
 
+          /tmp/myt-machine-wheel/bin/python - "$work" <<'PY'
+          import sys
+          from pathlib import Path
+
+          from myt_machine import (
+              AddressBinding,
+              MachineIdentity,
+              create_binding_content,
+              save_address_binding,
+          )
+          from myt_machine.binding import BINDING_CONTEXT
+
+          root = Path(sys.argv[1])
+          identity = MachineIdentity.generate()
+          address = 'B' + 'C' * 94
+          content = create_binding_content(identity.machine_id, 'testnet', address)
+          signature = identity.sign(content, BINDING_CONTEXT)
+          binding = AddressBinding(
+              identity=identity.public_identity,
+              network='testnet',
+              address=address,
+              identity_signature=signature.signature,
+              wallet_signature='SigV2' + '1' * 88,
+          )
+          save_address_binding(binding, root / 'binding.json')
+          PY
+
+          MYT_WALLET_RPC_URL=ftp://invalid.example \
+            /tmp/myt-machine-wheel/bin/myt-machine binding show \
+              --binding-file "$work/binding.json" > "$work/binding-show.json"
+
           set +e
           /tmp/myt-machine-wheel/bin/myt-machine \
             --rpc-url ftp://127.0.0.1 status > "$work/settlement-smoke.json"
@@ -140,13 +179,17 @@ jobs:
           create = json.loads((root / 'create.json').read_text())
           verify = json.loads((root / 'verify.json').read_text())
           settlement = json.loads((root / 'settlement-smoke.json').read_text())
+          binding_show = json.loads((root / 'binding-show.json').read_text())
           assert create['command'] == 'identity-create' and create['success'] is True
           assert verify['command'] == 'identity-verify' and verify['valid'] is True
+          assert binding_show['command'] == 'binding-show'
+          assert binding_show['success'] is True
+          assert binding_show['binding']['network'] == 'testnet'
           assert settlement['command'] == 'status' and settlement['success'] is False
           assert settlement['error']['code'] == 'invalid_configuration'
           PY
       - uses: actions/upload-artifact@v7
         with:
-          name: myt-machine-settlement-v0.2.0
+          name: myt-machine-settlement-v0.3.0
           path: dist/*
           if-no-files-found: error

@@ -1,4 +1,4 @@
-"""Command-line interface for MYT Machine Settlement and Identity."""
+"""Command-line interface for MYT settlement, identity, and address binding."""
 
 from __future__ import annotations
 
@@ -11,6 +11,12 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, TextIO
 
+from .binding import BINDING_TYPE, BINDING_VERSION, AddressBindingService
+from .binding_artifacts import (
+    ensure_binding_output_available,
+    load_address_binding,
+    save_address_binding,
+)
 from .errors import ConfigurationError, InputError, MytMachineError
 from .identity import (
     MAX_IDENTITY_MESSAGE_BYTES,
@@ -46,6 +52,7 @@ WALLET_COMMANDS = {
     "verify-message",
 }
 IDENTITY_COMMANDS = {"create", "show", "sign", "verify"}
+BINDING_COMMANDS = {"create", "show", "verify"}
 _GLOBAL_VALUE_OPTIONS = {
     "--account-index",
     "--address-index",
@@ -92,7 +99,10 @@ def _add_identity_message_source(parser: argparse.ArgumentParser) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = _JsonArgumentParser(
         prog="myt-machine",
-        description="Machine-facing settlement and offline identity interface for MYT",
+        description=(
+            "Machine-facing settlement, offline identity, and address-binding "
+            "interface for MYT"
+        ),
     )
     parser.add_argument("--rpc-url", help="Wallet RPC base URL")
     parser.add_argument("--rpc-user", help="Wallet RPC Digest Auth username")
@@ -194,6 +204,45 @@ def build_parser() -> argparse.ArgumentParser:
     identity_verify.add_argument("--context", required=True)
     identity_verify.add_argument("--signature", required=True)
     _add_identity_message_source(identity_verify)
+
+    binding = subparsers.add_parser(
+        "binding",
+        help="Create, inspect, and verify Machine Identity address bindings",
+    )
+    binding_subparsers = binding.add_subparsers(
+        dest="binding_command", required=True
+    )
+
+    binding_create = binding_subparsers.add_parser(
+        "create",
+        help="Create a two-sided Machine Identity and MYT address binding",
+    )
+    binding_create.add_argument("--private-key-file", required=True)
+    binding_create.add_argument("--identity-file", required=True)
+    binding_create.add_argument("--binding-file", required=True)
+    binding_create.add_argument("--passphrase-file")
+    binding_create.add_argument(
+        "--allow-standard-address",
+        action="store_true",
+        help="Explicitly permit binding the primary account 0/address 0",
+    )
+
+    binding_show = binding_subparsers.add_parser(
+        "show",
+        help="Validate and display a Binding v1 artifact without Wallet RPC",
+    )
+    binding_show.add_argument("--binding-file", required=True)
+
+    binding_verify = binding_subparsers.add_parser(
+        "verify",
+        help="Verify both binding signatures through an independent Wallet RPC",
+    )
+    binding_verify.add_argument("--binding-file", required=True)
+    binding_verify.add_argument("--expected-machine-id")
+    binding_verify.add_argument(
+        "--expected-network",
+        choices=("mainnet", "testnet", "stagenet"),
+    )
     return parser
 
 
@@ -276,6 +325,10 @@ def _command_hint(arguments: Sequence[str]) -> str:
             if index + 1 < len(arguments) and arguments[index + 1] in IDENTITY_COMMANDS:
                 return f"identity-{arguments[index + 1]}"
             return "identity"
+        if argument == "binding":
+            if index + 1 < len(arguments) and arguments[index + 1] in BINDING_COMMANDS:
+                return f"binding-{arguments[index + 1]}"
+            return "binding"
         if argument in WALLET_COMMANDS:
             return argument
     return "unknown"
@@ -459,6 +512,64 @@ def _run_identity_command(
     raise InputError("Unknown identity command")
 
 
+def _run_binding_command(
+    args: argparse.Namespace,
+    stdin: TextIO,
+    service: AddressBindingService | None,
+    passphrase_reader: Callable[[str], str] | None,
+) -> tuple[dict[str, Any], bool]:
+    if args.binding_command == "show":
+        binding = load_address_binding(args.binding_file, stdin)
+        return {"binding": binding.as_dict()}, True
+
+    if service is None:
+        raise ConfigurationError("Address binding command requires Wallet RPC")
+
+    if args.binding_command == "create":
+        # Fail before either signature is generated if the output cannot be created.
+        ensure_binding_output_available(args.binding_file)
+        public_identity = load_public_identity(args.identity_file)
+        passphrase = _identity_passphrase(
+            args,
+            stdin,
+            passphrase_reader,
+            confirm=False,
+        )
+        private_identity = load_private_identity(args.private_key_file, passphrase)
+        if private_identity.public_identity != public_identity:
+            raise ConfigurationError(
+                "Encrypted private key does not match the public identity document"
+            )
+        binding = service.create(
+            private_identity,
+            allow_standard_address=args.allow_standard_address,
+        )
+        save_address_binding(binding, args.binding_file)
+        address_type = (
+            "standard"
+            if args.account_index == 0 and args.address_index == 0
+            else "subaddress"
+        )
+        return {
+            "type": BINDING_TYPE,
+            "version": BINDING_VERSION,
+            "machine_id": binding.machine_id,
+            "network": binding.network,
+            "address": binding.address,
+            "address_type": address_type,
+        }, True
+
+    if args.binding_command == "verify":
+        binding = load_address_binding(args.binding_file, stdin)
+        result = service.verify(
+            binding,
+            expected_machine_id=args.expected_machine_id,
+            expected_network=args.expected_network,
+        )
+        return result.as_dict(), result.valid
+    raise InputError("Unknown binding command")
+
+
 def main(
     argv: Sequence[str] | None = None,
     *,
@@ -483,6 +594,24 @@ def main(
             result, positive = _run_identity_command(
                 args,
                 input_stream,
+                passphrase_reader,
+            )
+        elif args.command == "binding":
+            command = f"binding-{args.binding_command}"
+            if args.binding_command == "show":
+                binding_service = None
+            else:
+                config = _build_config(args, environment)
+                client = client_factory(config)
+                binding_service = AddressBindingService(
+                    client,
+                    account_index=args.account_index,
+                    address_index=args.address_index,
+                )
+            result, positive = _run_binding_command(
+                args,
+                input_stream,
+                binding_service,
                 passphrase_reader,
             )
         else:

@@ -1,6 +1,18 @@
-"""Public API for MYT Machine Settlement and offline identity."""
+"""Public API for MYT settlement, identity, and address binding."""
 
 from .amounts import ATOMIC_UNITS_PER_MYT, format_myt_amount, parse_myt_amount
+from .binding import (
+    AddressBinding,
+    AddressBindingService,
+    AddressBindingVerification,
+    create_binding_content,
+)
+from .binding_artifacts import (
+    load_address_binding,
+    parse_address_binding,
+    save_address_binding,
+    serialize_address_binding,
+)
 from .identity import (
     IdentitySignature,
     IdentityVerification,
@@ -17,6 +29,9 @@ from .settlement import MachineSettlement
 
 __all__ = [
     "ATOMIC_UNITS_PER_MYT",
+    "AddressBinding",
+    "AddressBindingService",
+    "AddressBindingVerification",
     "IdentitySignature",
     "IdentityVerification",
     "MachineIdentity",
@@ -24,15 +39,20 @@ __all__ = [
     "PublicMachineIdentity",
     "RpcConfig",
     "WalletRpcClient",
+    "create_binding_content",
     "decode_challenge_nonce",
     "derive_machine_id",
     "encode_challenge_nonce",
     "format_myt_amount",
+    "load_address_binding",
     "load_private_identity",
     "load_public_identity",
+    "parse_address_binding",
     "parse_myt_amount",
+    "save_address_binding",
     "save_private_identity",
     "save_public_identity",
+    "serialize_address_binding",
 ]
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

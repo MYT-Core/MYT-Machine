@@ -1,0 +1,48 @@
+{
+  "address": "TG98MfZho35G9uYHUwhd8cH49cNhU7AnC4KvCbHQwCag7ngJyYYLqwJZKoTQbH6z3hE4zEbN4vnpHJ4bybUmnpRz2TqmBwKEd",
+  "artifact": {
+    "address": "TG98MfZho35G9uYHUwhd8cH49cNhU7AnC4KvCbHQwCag7ngJyYYLqwJZKoTQbH6z3hE4zEbN4vnpHJ4bybUmnpRz2TqmBwKEd",
+    "identity": {
+      "algorithm": "ed25519",
+      "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+      "public_key": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+      "type": "myt-machine-identity",
+      "version": 1
+    },
+    "identity_signature": "8yv1BKCr46DS0mWKDNgVbiij_wNaW-uWPf7HHum_H_8fNzjKSq_azQubfd_ctk-ig-00qpsA-DKc36rePlG9DA",
+    "network": "testnet",
+    "type": "myt-machine-address-binding",
+    "version": 1,
+    "wallet_signature": "SigV23YGCthtR2iiAQ89SqK3zFqcWUGcm3LfTEJhJcNkkUYPjiFUcqYyLmpd4fSsRHsQa2hKVQALAe987NeSDSvdZGtdN"
+  },
+  "binding_context": "myt-machine/address-binding/v1",
+  "binding_domain_ascii": "MYT-MACHINE-ADDRESS-BINDING-V1\n",
+  "binding_domain_hex": "4d59542d4d414348494e452d414444524553532d42494e44494e472d56310a",
+  "canonical_content_ascii": "MYT-MACHINE-ADDRESS-BINDING-V1\n{\"address\":\"TG98MfZho35G9uYHUwhd8cH49cNhU7AnC4KvCbHQwCag7ngJyYYLqwJZKoTQbH6z3hE4zEbN4vnpHJ4bybUmnpRz2TqmBwKEd\",\"machine_id\":\"myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa\",\"network\":\"testnet\",\"type\":\"myt-machine-address-binding-statement\",\"version\":1}",
+  "canonical_content_hex": "4d59542d4d414348494e452d414444524553532d42494e44494e472d56310a7b2261646472657373223a22544739384d665a686f33354739755948557768643863483439634e685537416e43344b764362485177436167376e674a7959594c71774a5a4b6f54516248367a336845347a45624e34766e70484a34627962556d6e70527a3254716d42774b4564222c226d616368696e655f6964223a226d79742d6d616368696e652d76313a6768656a677737366b617032616c6168727a33796a7871703265786e32627134686578726a6e6a346c793536696e71796f6e6661222c226e6574776f726b223a22746573746e6574222c2274797065223a226d79742d6d616368696e652d616464726573732d62696e64696e672d73746174656d656e74222c2276657273696f6e223a317d",
+  "identity_document": {
+    "algorithm": "ed25519",
+    "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+    "public_key": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+    "type": "myt-machine-identity",
+    "version": 1
+  },
+  "identity_seed_hex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "identity_signature_base64url": "8yv1BKCr46DS0mWKDNgVbiij_wNaW-uWPf7HHum_H_8fNzjKSq_azQubfd_ctk-ig-00qpsA-DKc36rePlG9DA",
+  "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+  "network": "testnet",
+  "security_notice": "TEST-ONLY fixture. Never use the published identity seed or address for funds.",
+  "statement": {
+    "address": "TG98MfZho35G9uYHUwhd8cH49cNhU7AnC4KvCbHQwCag7ngJyYYLqwJZKoTQbH6z3hE4zEbN4vnpHJ4bybUmnpRz2TqmBwKEd",
+    "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+    "network": "testnet",
+    "type": "myt-machine-address-binding-statement",
+    "version": 1
+  },
+  "type": "myt-machine-address-binding-test-vector",
+  "version": 1,
+  "wallet_signature": "SigV23YGCthtR2iiAQ89SqK3zFqcWUGcm3LfTEJhJcNkkUYPjiFUcqYyLmpd4fSsRHsQa2hKVQALAe987NeSDSvdZGtdN",
+  "wallet_signature_generation": "Native MYT SigV2 signing uses fresh randomness; this fixed signature is a verification fixture, not a deterministic generation result.",
+  "wallet_signature_type": "spend",
+  "wallet_signature_version": 2
+}

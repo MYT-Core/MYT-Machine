@@ -359,7 +359,7 @@ class WalletRpcClient:
             headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "User-Agent": "myt-machine/0.1.0",
+                "User-Agent": "myt-machine/0.3.0",
             },
             method="POST",
         )
