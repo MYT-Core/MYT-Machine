@@ -1,0 +1,20 @@
+{
+  "type": "myt-machine-identity-test-vector",
+  "version": 1,
+  "warning": "Public test material only. Never use this seed for a real identity.",
+  "seed_hex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+  "public_key_base64url": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+  "machine_id_digest_hex": "31c8935bfe501fa02c078e7784de0fd12edd061c392f14b53c5e3be43618734a",
+  "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+  "message": "MYT Phase 4B deterministic vector",
+  "message_hex": "4d59542050686173652034422064657465726d696e697374696320766563746f72",
+  "message_context": "myt-machine/test-vector/v1",
+  "message_frame_hex": "4d59542d4d414348494e452d5349474e4154555245000131c8935bfe501fa02c078e7784de0fd12edd061c392f14b53c5e3be43618734a001a6d79742d6d616368696e652f746573742d766563746f722f763100000000000000214d59542050686173652034422064657465726d696e697374696320766563746f72",
+  "message_signature_base64url": "-utjLP8D6SCMA3CvD2QJcw2I2vQXFGjrdOJt_rEWpBuRFY8-Hd4PyaMagV4IDHM3gn0Fn-PdBCH6YCqROzeMDA",
+  "nonce_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "nonce_base64url": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "nonce_context": "myt-machine/auth/v1/test.example",
+  "nonce_frame_hex": "4d59542d4d414348494e452d5349474e4154555245000131c8935bfe501fa02c078e7784de0fd12edd061c392f14b53c5e3be43618734a00206d79742d6d616368696e652f617574682f76312f746573742e6578616d706c650000000000000020000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "nonce_signature_base64url": "zuJ0gMWNfXhR-460sl-OLGdZYW6dbIShA78X5XpwgvPTh7xpvU1eS4lFwGaHRztzl1Q0JRHHwsKsSb2d7hyJCg"
+}

@@ -1,23 +1,27 @@
-# MYT Machine Settlement SDK/CLI
+# MYT Machine Settlement and Identity SDK/CLI
 
 [![CI](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml/badge.svg)](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml)
 
-`myt-machine` is the Phase 4A machine-facing settlement interface for an
-existing `myt-wallet-rpc` process. It provides exact MYT amount handling,
-payments, wallet-local payment status, native payment proofs, and native
-message signatures.
+`myt-machine` provides the Phase 4 machine-facing interfaces for MYT:
 
-Version `0.1.0` does not change consensus, emission, HF17, network parameters,
-wallet RPC schemas, or cryptography. It never creates or opens wallets and it
-never handles seeds or private keys.
+- Phase 4A: exact MYT amount handling, payments, wallet-local payment status,
+  native payment proofs, and native wallet signatures through
+  `myt-wallet-rpc`.
+- Phase 4B: offline Ed25519 machine identities, signatures, and
+  challenge-response building blocks that do not use a wallet or network.
+
+Version `0.2.0` does not change consensus, emission, HF17, network parameters,
+or wallet RPC schemas. The Phase 4A interface remains backward compatible.
 
 ## Requirements
 
 - Python 3.10 or newer
-- A running `myt-wallet-rpc` with HTTP Digest Authentication enabled
-- A synchronized MYT daemon connected to that wallet RPC
+- `cryptography>=50.0.0`
+- For settlement commands only: a running `myt-wallet-rpc` with HTTP Digest
+  Authentication and a synchronized MYT daemon
 
-The installed package has no third-party runtime dependencies.
+Identity commands are fully offline. They do not require wallet RPC, a daemon,
+a blockchain, Testnet, Mainnet, or internet access.
 
 ## Install
 
@@ -37,6 +41,9 @@ On PowerShell, activate the environment with:
 ```
 
 ## Security Model
+
+The complete identity protocol and threat boundaries are documented in
+[`docs/identity-v1.md`](docs/identity-v1.md).
 
 - Wallet RPC passwords cannot be supplied with a CLI argument.
 - Use `--rpc-password-file` or `MYT_WALLET_RPC_PASSWORD`.
@@ -58,6 +65,13 @@ On PowerShell, activate the environment with:
   transaction hex, and transaction metadata are never returned.
 - A payment is submitted exactly once by the SDK. It is never retried after a
   timeout or malformed response.
+- Identity private keys are encrypted PKCS8 PEM files and are never written to
+  normal output.
+- Identity passphrases are accepted only through a protected file or an
+  interactive TTY prompt. There is no passphrase CLI option or environment
+  variable.
+- Identity operations reject malformed and non-canonical IDs, public keys,
+  signatures, and challenge encodings before verification.
 
 If communication fails after `transfer` may have reached the wallet, the error
 contains `"outcome_unknown": true`. Do not immediately send the payment again.
@@ -97,7 +111,7 @@ MYT_WALLET_RPC_TIMEOUT
 ```
 
 CLI values take precedence over environment values, which take precedence over
-defaults. The account and address indexes are CLI-only in v0.1.
+defaults. The account and address indexes remain CLI-only in v0.2.
 
 Example using a protected password file:
 
@@ -129,6 +143,10 @@ myt-machine prove-payment --txid <TXID> --address <ADDRESS> [--message <TEXT>]
 myt-machine verify-payment --proof-file <FILE|->
 myt-machine sign-message --message <TEXT>
 myt-machine verify-message --address <ADDRESS> --message <TEXT> --signature <SIGNATURE>
+myt-machine identity create --private-key-file <FILE> --identity-file <FILE> [--passphrase-file <FILE>]
+myt-machine identity show --identity-file <FILE>
+myt-machine identity sign --private-key-file <FILE> --identity-file <FILE> [--passphrase-file <FILE>] --context <CONTEXT> (--message <TEXT> | --message-file <FILE|-> | --nonce-base64url <NONCE>)
+myt-machine identity verify --identity-file <FILE> [--expected-machine-id <ID>] --context <CONTEXT> --signature <SIGNATURE> (--message <TEXT> | --message-file <FILE|-> | --nonce-base64url <NONCE>)
 ```
 
 Every normal invocation writes exactly one compact JSON document and one
@@ -162,6 +180,84 @@ negative payments, and more than nine decimal places are rejected.
 The JSON field `success` describes whether the command was processed without an
 operational error. A verification can therefore return `success: true`,
 `valid: false`, and exit code `1`.
+
+## Offline Machine Identity
+
+Create a protected passphrase file and a new identity. Existing output files
+are never overwritten. On Unix, passphrase and private-key files must have mode
+`0600`.
+
+```bash
+umask 077
+mkdir -p identity
+printf '%s\n' 'replace-with-a-long-random-passphrase' > identity/passphrase
+chmod 600 identity/passphrase
+
+myt-machine identity create \
+  --private-key-file identity/machine-key.pem \
+  --identity-file identity/machine-identity.json \
+  --passphrase-file identity/passphrase
+
+myt-machine identity show \
+  --identity-file identity/machine-identity.json
+```
+
+The private key is an encrypted PKCS8 PEM file. The public identity document
+contains only the Ed25519 public key, algorithm, protocol version, and derived
+Machine ID. Copying the same private key copies the same identity.
+
+Sign and verify a message:
+
+```bash
+SIGNATURE=$(myt-machine identity sign \
+  --private-key-file identity/machine-key.pem \
+  --identity-file identity/machine-identity.json \
+  --passphrase-file identity/passphrase \
+  --context myt-machine/message \
+  --message 'hello from this machine' | \
+  python -c 'import json,sys; print(json.load(sys.stdin)["signature"])')
+
+myt-machine identity verify \
+  --identity-file identity/machine-identity.json \
+  --context myt-machine/message \
+  --message 'hello from this machine' \
+  --signature "$SIGNATURE"
+```
+
+Generic verification proves only that the signature matches the supplied
+identity document. Authentication and continuity require an independently
+pinned Machine ID:
+
+```bash
+myt-machine identity verify \
+  --identity-file identity/machine-identity.json \
+  --expected-machine-id "$EXPECTED_MACHINE_ID" \
+  --context myt-machine/auth/v1/service.example \
+  --nonce-base64url "$CHALLENGE" \
+  --signature "$SIGNATURE"
+```
+
+With `--expected-machine-id`, `valid` is true only when both the signature and
+the expected identity match. A verifier must generate the 32-byte challenge,
+bind it to the intended context and Machine ID, enforce an expiry, and consume
+it atomically. Cryptographic verification by itself does not prevent replay.
+
+`identity sign` intentionally omits the message and `message_digest` from its
+result. Ed25519 signatures are deterministic, however, so signatures over
+low-entropy messages can still be correlated or tested against guesses. Use a
+message file or stdin instead of `--message` when command-line visibility is a
+concern.
+
+The runtime floor is `cryptography>=50.0.0`. Versions below 50 are unsupported;
+50.0.0 is the first release patched for
+[GHSA-g6cj-pr64-35w5](https://github.com/pyca/cryptography/security/advisories/GHSA-g6cj-pr64-35w5),
+and it also includes the fixes for
+[GHSA-jwv3-5hgf-82ww](https://github.com/pyca/cryptography/security/advisories/GHSA-jwv3-5hgf-82ww)
+and
+[GHSA-m2h6-j472-rp4c](https://github.com/pyca/cryptography/security/advisories/GHSA-m2h6-j472-rp4c).
+There is no artificial upper bound because pyca documents API stability for
+the APIs used here. Users who build `cryptography` from source remain
+responsible for linking it against a patched, supported OpenSSL version.
 
 ## Payment Proof Artifact
 
@@ -222,6 +318,26 @@ from myt_machine import format_myt_amount, parse_myt_amount
 
 assert parse_myt_amount("0.100000001") == 100_000_001
 assert format_myt_amount(100_000_001) == "0.100000001"
+```
+
+Offline identity helpers are public as well:
+
+```python
+from myt_machine import (
+    MachineIdentity,
+    decode_challenge_nonce,
+    load_public_identity,
+)
+
+public_identity = load_public_identity("identity/machine-identity.json")
+nonce_bytes = decode_challenge_nonce(challenge_from_verifier)
+verification = public_identity.verify(
+    nonce_bytes,
+    "myt-machine/auth/v1/service.example",
+    signature,
+    expected_machine_id=pinned_machine_id,
+)
+assert verification.authentication_valid is True
 ```
 
 ## Testnet End-to-End Runbook
@@ -348,10 +464,11 @@ removed, package version, and the Git commit used for the run.
 
 ## Scope Limits
 
-- No wallet creation, wallet opening, seed management, or key management
+- No wallet creation, wallet opening, seed management, or wallet-key management
 - No automatic payment retry or payment idempotency
 - No global blockchain transaction search
-- No marketplace, reputation, or agent identity protocol
+- No marketplace, reputation, identity discovery, revocation, or key rotation
+- No binding between a Machine ID and an MYT wallet address
 - No consensus, daemon, HF17, emission, or network parameter changes
 
 ## Development
@@ -363,6 +480,7 @@ PYTHONPATH=src \
   python -m unittest discover -s tests -v
 ```
 
-The dedicated GitHub Actions workflow tests Python 3.10, 3.12, and 3.13 on
-Linux, includes a Windows run, compiles all modules, and builds both a wheel and
-a source distribution.
+The GitHub Actions workflow tests Python 3.10, 3.12, and 3.13 on Linux and
+Windows against both the dependency floor and latest compatible
+`cryptography`. It also audits dependencies, compiles all modules, and builds
+and smoke-tests both a wheel and source distribution.

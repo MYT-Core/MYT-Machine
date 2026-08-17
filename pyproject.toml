@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "myt-machine-settlement"
-version = "0.1.0"
-description = "Machine-facing settlement SDK and CLI for MYT wallet RPC"
+version = "0.2.0"
+description = "Machine-facing settlement and offline identity SDK and CLI for MYT"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 authors = [{ name = "MYT-Core" }]
-dependencies = []
+dependencies = ["cryptography>=50.0.0"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
