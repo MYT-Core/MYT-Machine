@@ -106,3 +106,13 @@ The passing current PR is superseded for these documented design reasons, not
 because its already-fixed CI problem is being treated as current. Useful code
 and concepts remain credited; the original contributor history is preserved.
 Formal closure follows only after replacement validation and CI have passed.
+
+## Supersession completed
+
+Replacement implementation commit:
+`4d475e6eb19eaa2d83a0ef6c81a18f5fd8cc1e29`.
+All 14 jobs of [replacement CI 34042509472](https://github.com/MYT-Core/MYT-Machine/actions/runs/34042509472)
+passed. The current PR head was rechecked immediately before closure and remained
+`41e0e6b78da4f6ca75f6fc5cf8059327f9b1c8ee`. PR #1 was closed as SUPERSEDED with
+the review, attribution, test results and replacement linked in the discussion.
+It was not merged; merge SHA is N/A. No contributor branch was deleted or changed.

@@ -144,11 +144,11 @@ does not itself bind a socket or implement a production HTTP transport.
 ## Privacy and future adapters
 
 Invoice disclosure links amount, recipient, reference/memo, TXID and service
-usage. Use dedicated subaddresses and minimize references. No payer address is
-derived from these fields. Never place credentials, keys or secrets in invoice
-IDs, idempotency keys, memo or reference: those are intentionally stored and
-disclosed as billing data, not secret-redacted credential fields. No payer address is
-derived or persisted. The ledger is local mutable service state, not a public
+usage. Use dedicated subaddresses and minimize references. Never place credentials,
+keys or secrets in invoice IDs, idempotency keys, memo or reference: those are
+intentionally stored and disclosed as billing data, not secret-redacted credential
+fields. No payer address is derived or persisted. The ledger is local mutable
+service state, not a public
 blockchain record. Details and reorg/expiry limitations are in [invoices.md](invoices.md).
 
 MCP is deferred. A future optional adapter should call the same `BillingService`

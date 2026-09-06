@@ -20,7 +20,7 @@ Runtime remains exactly `cryptography>=50.0.0`, with no additional dependency.
   Head movement caused an explicit safety stop; review resumed only after
   authorization. This exact SHA must be rechecked before final integration.
 - PR merge SHA: N/A. Direct merge is unsuitable; attribution-preserving
-  supersession is the selected integration method, subject to replacement gates.
+  supersession was completed after replacement validation and green CI.
 
 The complete original diff was inspected before integration: 462 additions,
 one deletion, and exactly these paths:
@@ -315,11 +315,43 @@ pip check, both runtime audits, wheel/sdist/twine and clean-wheel verification
 were repeated successfully. The repeated outside-checkout suite passed 318/318
 in 9.100 seconds; the separate deterministic billing E2E passed again.
 
-Local matrix, clean-wheel/build/security gates passed; GitHub Actions pending.
-Main remains unchanged until GitHub gates and formal PR supersession complete.
-The final main/remote SHA and execution evidence will be reported after the
-authorized fast-forward. A commit cannot contain its own Git object hash; the
-final execution report records that hash outside its hashed repository content.
+Implementation commit:
+`4d475e6eb19eaa2d83a0ef6c81a18f5fd8cc1e29`, author and committer MYT-Core, with
+the original contributor's Co-authored-by trailer. It contains exactly the 25
+listed paths. Staged/source diff checks passed; no personal local paths, secrets,
+temporary files, compiled artifacts or unrelated baseline test edits were found.
+The local and remote integration branch heads matched that commit exactly.
+
+GitHub [replacement run 34042509472](https://github.com/MYT-Core/MYT-Machine/actions/runs/34042509472)
+completed SUCCESS on that exact commit, with all 14 jobs passing:
+
+| Jobs | Result |
+| --- | --- |
+| ubuntu-latest, Python 3.10, floor / latest | SUCCESS / SUCCESS |
+| ubuntu-latest, Python 3.12, floor / latest | SUCCESS / SUCCESS |
+| ubuntu-latest, Python 3.13, floor / latest | SUCCESS / SUCCESS |
+| windows-latest, Python 3.10, floor / latest | SUCCESS / SUCCESS |
+| windows-latest, Python 3.12, floor / latest | SUCCESS / SUCCESS |
+| windows-latest, Python 3.13, floor / latest | SUCCESS / SUCCESS |
+| Dependency security audit and static checks | SUCCESS |
+| Build, metadata, twine and clean-wheel E2E/regressions | SUCCESS |
+
+Only after those gates, PR head 41e0e6b was rechecked and PR #1 was formally
+closed as SUPERSEDED, with contributor credit and replacement links. PR merge
+SHA is N/A; no contributor history was rewritten or deleted. A separate
+documentation-only commit records the result without changing validated code.
+
+Main integration uses `git merge --ff-only` and a normal push, only after that
+documentation commit's CI is also green. There is no synthetic merge commit,
+force-push or rebase. The main workflow must then independently succeed.
+Recommendation: implementation/security/package gates pass; release review is
+appropriate only after final main identity, cleanliness and CI are confirmed.
+
+The exact final main/remote SHA, documentation commit and main run are recorded
+in the final execution copy of this report outside the checkout. A Git commit
+cannot embed its own object hash. This tracked document is the pre-main evidence
+snapshot; the final execution report binds it to the subsequently checked main
+commit without making the local worktree dirty or pretending future CI passed.
 
 No release, tag, PyPI publication, public deployment, Core, consensus, HF17,
 blockchain, transaction-format or Wallet-RPC-schema change is authorized here.
