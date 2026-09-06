@@ -9,9 +9,10 @@ from __future__ import annotations
 import json
 import time
 import uuid
+from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import Any, Mapping, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from .amounts import UINT64_MAX
 from .errors import InputError
@@ -52,7 +53,7 @@ class PaymentRequest:
             return PaymentRequestState.EXPIRED
         return PaymentRequestState.PENDING
 
-    def mark_paid(self, *, now: int | None = None) -> "PaymentRequest":
+    def mark_paid(self, *, now: int | None = None) -> PaymentRequest:
         """Return a PAID copy if the request is still payable."""
         state = self.effective_state(now=now)
         if state is PaymentRequestState.EXPIRED:
@@ -61,7 +62,7 @@ class PaymentRequest:
             return self
         return replace(self, state=PaymentRequestState.PAID)
 
-    def expire(self, *, now: int | None = None) -> "PaymentRequest":
+    def expire(self, *, now: int | None = None) -> PaymentRequest:
         """Return an EXPIRED copy when its expiry time has elapsed."""
         if self.state is PaymentRequestState.PAID:
             raise InputError("Paid payment request cannot be expired")
