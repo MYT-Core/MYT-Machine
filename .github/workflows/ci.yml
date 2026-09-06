@@ -1,4 +1,4 @@
-name: MYT Machine Settlement, Identity, and Address Binding
+name: MYT Machine Settlement, Identity, Binding, and Billing
 
 on:
   push: {}
@@ -25,6 +25,8 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: pip
           cache-dependency-path: pyproject.toml
+      - name: Update installation tooling
+        run: python -m pip install --disable-pip-version-check --upgrade pip
       - name: Install dependency floor
         if: matrix.cryptography == 'floor'
         run: python -m pip install --disable-pip-version-check cryptography==50.0.0
@@ -43,6 +45,17 @@ jobs:
           python -m pip check
       - name: Unit and CLI tests
         run: python -m unittest discover -s tests -v
+      - name: Separate legacy regression gates
+        run: |
+          python -m unittest discover -s tests -p "test_amounts.py"
+          python -m unittest discover -s tests -p "test_settlement.py"
+          python -m unittest discover -s tests -p "test_rpc.py"
+          python -m unittest discover -s tests -p "test_proofs.py"
+          python -m unittest discover -s tests -p "test_cli.py"
+          python -m unittest discover -s tests -p "test_identity*.py"
+          python -m unittest discover -s tests -p "test_cli_identity.py"
+          python -m unittest discover -s tests -p "test_binding*.py"
+          python -m unittest discover -s tests -p "test_cli_binding.py"
       - name: Compile modules
         run: python -m compileall -q src tests
 
@@ -56,6 +69,8 @@ jobs:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: pyproject.toml
+      - name: Update installation tooling
+        run: python -m pip install --disable-pip-version-check --upgrade pip
       - name: Install package and security tooling
         run: python -m pip install --disable-pip-version-check -e . pip-audit bandit ruff
       - name: Audit installed dependencies
@@ -74,6 +89,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - name: Update installation tooling
+        run: python -m pip install --disable-pip-version-check --upgrade pip
       - name: Install build frontends
         run: python -m pip install --disable-pip-version-check build twine
       - name: Build distributions
@@ -86,7 +103,7 @@ jobs:
 
           wheel = glob.glob('dist/*.whl')
           assert len(wheel) == 1, wheel
-          assert wheel[0].endswith('myt_machine_settlement-0.3.0-py3-none-any.whl'), wheel
+          assert wheel[0].endswith('myt_machine_settlement-0.4.0-py3-none-any.whl'), wheel
           with zipfile.ZipFile(wheel[0]) as archive:
               metadata_name = next(name for name in archive.namelist() if name.endswith('/METADATA'))
               metadata = archive.read(metadata_name).decode('utf-8')
@@ -96,17 +113,24 @@ jobs:
           PY
       - name: Verify source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/identity-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/identity-v1-test-vector.json$'
-          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/address-binding-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.3.0.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/identity-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/identity-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/address-binding-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
+      - name: Verify Phase 4D source distribution documentation
+        run: |
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/payment-requests.md$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/payment-request-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/invoices.md$'
+          tar -tzf dist/myt_machine_settlement-0.4.0.tar.gz | grep '/docs/api-billing.md$'
       - name: Check distribution metadata
         run: python -m twine check dist/*
       - name: Smoke-test installed wheel
         run: |
           python -m venv /tmp/myt-machine-wheel
+          /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check --upgrade pip
           /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check dist/*.whl
-          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.3.0"
+          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.4.0"
 
           work=$(mktemp -d)
           trap 'rm -rf "$work"' EXIT
@@ -188,8 +212,12 @@ jobs:
           assert settlement['command'] == 'status' and settlement['success'] is False
           assert settlement['error']['code'] == 'invalid_configuration'
           PY
+      - name: Clean-wheel billing E2E and regression tests
+        run: |
+          cd /tmp
+          /tmp/myt-machine-wheel/bin/python -m unittest discover -s "$GITHUB_WORKSPACE/tests" -v
       - uses: actions/upload-artifact@v7
         with:
-          name: myt-machine-settlement-v0.3.0
+          name: myt-machine-settlement-v0.4.0
           path: dist/*
           if-no-files-found: error

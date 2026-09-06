@@ -2,3 +2,9 @@ include docs/identity-v1.md
 include docs/identity-v1-test-vector.json
 include docs/address-binding-v1.md
 include docs/address-binding-v1-test-vector.json
+include docs/payment-requests.md
+include docs/payment-request-v1-test-vector.json
+include docs/invoices.md
+include docs/api-billing.md
+include docs/phase4d-pr1-review.md
+include MYT_Phase4D_Validation.md

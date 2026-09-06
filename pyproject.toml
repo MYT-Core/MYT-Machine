@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "myt-machine-settlement"
-version = "0.3.0"
-description = "Machine settlement, offline identity, and address-binding SDK and CLI for MYT"
+version = "0.4.0"
+description = "Machine settlement, identity, address binding, and non-custodial invoice billing for MYT"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"

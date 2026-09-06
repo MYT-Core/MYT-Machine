@@ -1,4 +1,4 @@
-# MYT Machine Settlement, Identity, and Address Binding SDK/CLI
+# MYT Machine Settlement, Identity, Address Binding, and Billing SDK/CLI
 
 [![CI](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml/badge.svg)](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml)
 
@@ -11,10 +11,25 @@
   challenge-response building blocks that do not use a wallet or network.
 - Phase 4C: selectively disclosed, two-sided cryptographic bindings between a
   Machine Identity and an MYT settlement address.
+- Phase 4D: immutable payment requests, persistent invoices, read-only native
+  payment verification and a programmatic API billing interface with optional
+  authenticated WSGI routes.
 
-Version `0.3.0` does not change MYT Core, consensus, emission, HF17, network
-parameters, blockchain state, or wallet RPC schemas. The Phase 4A and Phase 4B
+Version `0.4.0` does not change MYT Core, consensus, emission, HF17, network
+parameters, blockchain state, or wallet RPC schemas. The Phase 4A, Phase 4B and Phase 4C
 interfaces remain backward compatible.
+
+Phase 4D documentation: [Payment Request v1](docs/payment-requests.md),
+[invoice lifecycle and verification](docs/invoices.md), and
+[SDK, CLI and REST billing examples](docs/api-billing.md). The initial payment
+request contribution by **fallacyofall** in PR #1 is credited in the
+[forensic review](docs/phase4d-pr1-review.md).
+
+Invoices never initiate outgoing payments. `PAID` requires an invoice-bound
+native OutProofV2, exact amount, correct network/recipient, ten confirmations by
+default and atomic transaction-reuse protection. Imported request artifacts
+cannot supply a payment state. See the invoice documentation for expiry, reorg,
+local-database trust and service-authorization limitations.
 
 ## Requirements
 

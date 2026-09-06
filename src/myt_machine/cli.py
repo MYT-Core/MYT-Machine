@@ -11,6 +11,7 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, TextIO
 
+from .billing_cli import add_billing_parsers, run_billing_command
 from .binding import BINDING_TYPE, BINDING_VERSION, AddressBindingService
 from .binding_artifacts import (
     ensure_binding_output_available,
@@ -243,6 +244,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--expected-network",
         choices=("mainnet", "testnet", "stagenet"),
     )
+    add_billing_parsers(subparsers)
     return parser
 
 
@@ -321,6 +323,11 @@ def _emit(stream: TextIO, payload: dict[str, Any]) -> None:
 
 def _command_hint(arguments: Sequence[str]) -> str:
     for index, argument in enumerate(arguments):
+        if argument in {"payment-request", "invoice"}:
+            actions = {"create", "show", "verify", "get", "list", "status", "expire"}
+            if index + 1 < len(arguments) and arguments[index + 1] in actions:
+                return f"{argument}-{arguments[index + 1]}"
+            return argument
         if argument == "identity":
             if index + 1 < len(arguments) and arguments[index + 1] in IDENTITY_COMMANDS:
                 return f"identity-{arguments[index + 1]}"
@@ -589,7 +596,13 @@ def main(
 
     try:
         args = build_parser().parse_args(arguments)
-        if args.command == "identity":
+        if args.command in {"payment-request", "invoice"}:
+            action = args.request_command if args.command == "payment-request" else args.invoice_command
+            command = f"{args.command}-{action}"
+            result, positive = run_billing_command(
+                args, input_stream, lambda: client_factory(_build_config(args, environment)),
+            )
+        elif args.command == "identity":
             command = f"identity-{args.identity_command}"
             result, positive = _run_identity_command(
                 args,
