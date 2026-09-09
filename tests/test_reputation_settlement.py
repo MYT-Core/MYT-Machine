@@ -5,12 +5,18 @@ import tempfile
 import unittest
 from contextlib import closing
 from pathlib import Path
+from unittest.mock import patch
 
 from billing_fakes import ADDRESS, OTHER_ADDRESS, proof_for
 from reputation_fakes import ISSUER, OTHER, SUBJECT, ReputationRpc, attest, binding_for
 
 from myt_machine.billing import BillingService
-from myt_machine.errors import ConfigurationError, InputError, RpcTransportError
+from myt_machine.errors import (
+    ConfigurationError,
+    InputError,
+    RpcTransportError,
+    WalletRpcError,
+)
 from myt_machine.invoice_store import SQLiteInvoiceStore
 from myt_machine.invoice_verification import WalletPaymentVerifier
 from myt_machine.reputation_policy import ReputationPolicy, reputation_summary
@@ -156,6 +162,31 @@ class ReputationSettlementTests(unittest.TestCase):
         with self.assertRaises(RpcTransportError):
             self.record()
         self.assertEqual(sum(c[0] == "check_tx_proof" for c in self.rpc.calls), 1)
+
+
+    def test_rpc_application_errors_redacted_without_retry(self):
+        self.paid()
+        original = self.rpc.call
+        sentinel = "must-not-appear-wallet-secret"
+        for failing_method in ("validate_address", "verify", "check_tx_proof"):
+            attempts = []
+            def fail_once(method, params=None, *, calls=attempts, target=failing_method, **kwargs):
+                calls.append(method)
+                if method == target:
+                    raise WalletRpcError(-1, sentinel)
+                return original(method, params, **kwargs)
+            with self.subTest(method=failing_method):
+                with patch.object(self.rpc, "call", side_effect=fail_once), self.assertRaises(WalletRpcError) as raised:
+                    self.record()
+                error = raised.exception
+                self.assertEqual(error.exit_code, 5)
+                self.assertEqual(error.rpc_code, -1)
+                self.assertEqual(error.rpc_message, "Wallet RPC application error")
+                self.assertNotIn(sentinel, str(error))
+                self.assertNotIn(sentinel, repr(error))
+                self.assertNotIn(sentinel, json.dumps(error.as_dict()))
+                self.assertEqual(attempts.count(failing_method), 1)
+                self.assertEqual(self.store.snapshot(network="testnet")[1], [])
 
     def test_duplicate_settlement(self):
         self.paid()

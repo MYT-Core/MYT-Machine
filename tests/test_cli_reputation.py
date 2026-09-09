@@ -220,6 +220,42 @@ class ReputationCliTests(unittest.TestCase):
             load_reputation_artifact(output, io.StringIO()).id, result["id"]
         )
 
+    def test_attest_identity_field_diagnostics_redacted(self):
+        self.check_identity_field_diagnostics_redacted("attest")
+
+    def test_revoke_identity_field_diagnostics_redacted(self):
+        self.check_identity_field_diagnostics_redacted("revoke")
+
+    def check_identity_field_diagnostics_redacted(self, action):
+        keys = self.key_files()
+        identity_file = self.root / "identity.json"
+        original = identity_file.read_text()
+        sentinel = PASSPHRASE.decode()
+        variants = (
+            '{"' + sentinel + '":null,' + original[1:],
+            '{"' + sentinel + '":1,"' + sentinel + '":2,' + original[1:],
+            '{"\\u006dust-not-appear":1,"must-not-appear":2,' + original[1:],
+        )
+        output = self.root / "new.json"
+        extra = (
+            ["--subject", SUBJECT.machine_id, "--outcome", "POSITIVE"]
+            if action == "attest"
+            else ["--artifact-file", self.file]
+        )
+        for encoded in variants:
+            with self.subTest(action=action, encoded_kind=variants.index(encoded)):
+                identity_file.write_text(encoded)
+                rc, result = self.run_cli(
+                    action, "--network", "testnet", *keys, *extra,
+                    "--output-file", output,
+                )
+                self.assertEqual(rc, 2)
+                self.assertEqual(
+                    result["error"]["message"], "Unable to load a valid issuer identity"
+                )
+                self.assertFalse(output.exists())
+
+
     def test_wrong_passphrase(self):
         keys = self.key_files()
         (self.root / "passphrase").write_bytes(b"wrong-passphrase-long-enough")

@@ -5,7 +5,7 @@ from __future__ import annotations
 from .billing import BillingService
 from .binding import AddressBinding, AddressBindingService
 from .binding_artifacts import parse_address_binding
-from .errors import InputError
+from .errors import InputError, WalletRpcError
 from .identity import machine_id_digest
 from .invoice_store import SQLiteInvoiceStore
 from .invoice_verification import WalletPaymentVerifier
@@ -44,17 +44,21 @@ def record_verified_settlement(
         or binding.network != network
     ):
         raise InputError("Binding does not match the invoice recipient and network")
-    if (
-        not AddressBindingService(client)
-        .verify(
-            binding, expected_machine_id=expected_machine_id, expected_network=network
+    try:
+        if (
+            not AddressBindingService(client)
+            .verify(
+                binding, expected_machine_id=expected_machine_id, expected_network=network
+            )
+            .valid
+        ):
+            raise InputError("Settlement binding verification failed")
+        observation = WalletPaymentVerifier(client, network=network).verify(
+            record.request, proof, required_confirmations=record.required_confirmations
         )
-        .valid
-    ):
-        raise InputError("Settlement binding verification failed")
-    observation = WalletPaymentVerifier(client, network=network).verify(
-        record.request, proof, required_confirmations=record.required_confirmations
-    )
+    except WalletRpcError as exc:
+        # Native error text can disclose wallet data; preserve only its numeric code.
+        raise WalletRpcError(exc.rpc_code, "Wallet RPC application error") from None
     if not observation.eligible or observation.txid != record.txid:
         raise InputError("Fresh settlement proof does not match the PAID invoice")
     evidence = {

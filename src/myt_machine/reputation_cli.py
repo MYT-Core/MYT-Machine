@@ -85,7 +85,11 @@ def run_reputation_command(args, stdin, client_factory, passphrase_loader):
     action = args.reputation_command
     if action in {"attest", "revoke"}:
         ensure_reputation_output(args.output_file)
-        public = load_public_identity(args.identity_file)
+        try:
+            public = load_public_identity(args.identity_file)
+        except InputError:
+            # Identity parser diagnostics can contain untrusted field names.
+            raise InputError("Unable to load a valid issuer identity") from None
         identity = load_private_identity(args.private_key_file, passphrase_loader(args))
         if identity.public_identity != public:
             raise ConfigurationError("Private key and issuer identity do not match")
