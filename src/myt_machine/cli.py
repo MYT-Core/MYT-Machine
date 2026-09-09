@@ -36,6 +36,7 @@ from .identity_keys import (
     read_identity_passphrase_file,
 )
 from .proofs import load_proof_artifact
+from .reputation_cli import add_reputation_parsers, run_reputation_command
 from .rpc import DEFAULT_RPC_URL, DEFAULT_TIMEOUT, RpcConfig, WalletRpcClient
 from .settlement import MachineSettlement
 
@@ -245,6 +246,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("mainnet", "testnet", "stagenet"),
     )
     add_billing_parsers(subparsers)
+    add_reputation_parsers(subparsers)
     return parser
 
 
@@ -596,7 +598,15 @@ def main(
 
     try:
         args = build_parser().parse_args(arguments)
-        if args.command in {"payment-request", "invoice"}:
+        if args.command == "reputation":
+            command = f"reputation-{args.reputation_command}"
+            result, positive = run_reputation_command(
+                args, input_stream, lambda: client_factory(_build_config(args, environment)),
+                lambda key_args: _identity_passphrase(
+                    key_args, input_stream, passphrase_reader, confirm=False
+                ),
+            )
+        elif args.command in {"payment-request", "invoice"}:
             action = args.request_command if args.command == "payment-request" else args.invoice_command
             command = f"{args.command}-{action}"
             result, positive = run_billing_command(

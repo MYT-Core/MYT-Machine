@@ -8,3 +8,9 @@ include docs/invoices.md
 include docs/api-billing.md
 include docs/phase4d-pr1-review.md
 include MYT_Phase4D_Validation.md
+include docs/reputation.md
+include docs/reputation-policy.md
+include docs/reputation-attestation-v1.md
+include docs/reputation-attestation-v1-test-vector.json
+include MYT_Phase4E_Validation.md
+recursive-include tests *.py

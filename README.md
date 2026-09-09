@@ -14,10 +14,20 @@
 - Phase 4D: immutable payment requests, persistent invoices, read-only native
   payment verification and a programmatic API billing interface with optional
   authenticated WSGI routes.
+- Phase 4E: offline signed reputation opinions, issuer revocations, private local
+  settlement observations and an explicit deterministic local policy. No global
+  trust score and no claim that Machine IDs represent independent people.
+- Phase 4F: future selective disclosure; not implemented.
 
-Version `0.4.0` does not change MYT Core, consensus, emission, HF17, network
-parameters, blockchain state, or wallet RPC schemas. The Phase 4A, Phase 4B and Phase 4C
+Version `0.5.0` does not change MYT Core, consensus, emission, HF17, network
+parameters, blockchain state, or wallet RPC schemas. The Phase 4A, Phase 4B, Phase 4C and Phase 4D
 interfaces remain backward compatible.
+
+Phase 4E documentation: [model, CLI and offline E2E](docs/reputation.md),
+[signed artifact protocol](docs/reputation-attestation-v1.md), and
+[local policy, revocation and privacy limits](docs/reputation-policy.md).
+Signed feedback is opinion, not verified service quality. Payments cannot
+identify a payer Machine ID. The default policy accepts no untrusted issuer.
 
 Phase 4D documentation: [Payment Request v1](docs/payment-requests.md),
 [invoice lifecycle and verification](docs/invoices.md), and

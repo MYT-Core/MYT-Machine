@@ -38,6 +38,16 @@ from .payment_requests import (
     parse_payment_request,
     serialize_payment_request,
 )
+from .reputation import (
+    ReputationArtifact,
+    create_attestation,
+    create_revocation,
+    parse_reputation_artifact,
+)
+from .reputation_files import load_reputation_artifact, save_reputation_artifact
+from .reputation_policy import ReputationPolicy, reputation_summary
+from .reputation_settlement import record_verified_settlement
+from .reputation_store import ReputationStore
 from .rpc import RpcConfig, WalletRpcClient
 from .settlement import MachineSettlement
 
@@ -58,12 +68,17 @@ __all__ = [
     "PaymentRequest",
     "PaymentRequestVerifier",
     "PublicMachineIdentity",
+    "ReputationArtifact",
+    "ReputationPolicy",
+    "ReputationStore",
     "RpcConfig",
     "SQLiteInvoiceStore",
     "WalletPaymentVerifier",
     "WalletRpcClient",
+    "create_attestation",
     "create_binding_content",
     "create_payment_request",
+    "create_revocation",
     "decode_challenge_nonce",
     "derive_machine_id",
     "encode_challenge_nonce",
@@ -71,14 +86,19 @@ __all__ = [
     "load_address_binding",
     "load_private_identity",
     "load_public_identity",
+    "load_reputation_artifact",
     "parse_address_binding",
     "parse_myt_amount",
     "parse_payment_request",
+    "parse_reputation_artifact",
+    "record_verified_settlement",
+    "reputation_summary",
     "save_address_binding",
     "save_private_identity",
     "save_public_identity",
+    "save_reputation_artifact",
     "serialize_address_binding",
     "serialize_payment_request",
 ]
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
