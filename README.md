@@ -19,9 +19,31 @@
   trust score and no claim that Machine IDs represent independent people.
 - Phase 4F: future selective disclosure; not implemented.
 
-Version `0.5.0` does not change MYT Core, consensus, emission, HF17, network
+Version `0.5.1` does not change MYT Core, consensus, emission, HF17, network
 parameters, blockchain state, or wallet RPC schemas. The Phase 4A, Phase 4B, Phase 4C and Phase 4D
-interfaces remain backward compatible.
+interfaces remain backward compatible, as do the Phase 4E interfaces.
+
+### v0.5.1 hardening
+
+Following a community security review, CLI Wallet RPC application errors retain
+their numeric code but replace provider-controlled diagnostics with fixed public
+text. SDK callers can still inspect the original `WalletRpcError` diagnostic;
+do not forward it to untrusted logs or users. The existing reputation bridge
+continues to redact its SDK diagnostics too.
+
+`reputation record-settlement` now opens or creates its reputation database only
+after local invoice/artifact checks and read-only native verification succeed.
+Failed preconditions leave a new reputation path absent and an existing store
+untouched. The SDK accepts a path for the same deferred behavior; a caller that
+constructs `ReputationStore` beforehand explicitly initializes that database.
+After verification reaches persistence, storage failures may leave an initialized
+database: this is not a cross-database transaction or crash-cleanup guarantee.
+Uniqueness remains enforced inside the existing SQLite transaction. Private,
+service-owned directories and trusted local invoice databases remain required.
+
+The Wallet RPC User-Agent uses the same runtime version source as package
+metadata (`myt-machine/0.5.1`). No new runtime dependencies or spending paths
+are introduced. Phase 4F remains unimplemented.
 
 Phase 4E documentation: [model, CLI and offline E2E](docs/reputation.md),
 [signed artifact protocol](docs/reputation-attestation-v1.md), and

@@ -18,7 +18,7 @@ from .binding_artifacts import (
     load_address_binding,
     save_address_binding,
 )
-from .errors import ConfigurationError, InputError, MytMachineError
+from .errors import ConfigurationError, InputError, MytMachineError, WalletRpcError
 from .identity import (
     MAX_IDENTITY_MESSAGE_BYTES,
     decode_challenge_nonce,
@@ -658,13 +658,22 @@ def main(
         )
         return 0 if positive else 1
     except MytMachineError as exc:
+        # SDK diagnostics stay available on the exception, not in public CLI JSON.
+        error = exc.as_dict()
+        if isinstance(exc, WalletRpcError):
+            error = {
+                "code": exc.code,
+                "message": "Wallet RPC rejected the request",
+                "rpc_code": exc.rpc_code,
+                "rpc_message": "Wallet RPC application error",
+            }
         _emit(
             output_stream,
             {
                 "schema_version": SCHEMA_VERSION,
                 "command": command,
                 "success": False,
-                "error": exc.as_dict(),
+                "error": error,
             },
         )
         return exc.exit_code

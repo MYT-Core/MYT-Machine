@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "myt-machine-settlement"
-version = "0.5.0"
+dynamic = ["version"]
 description = "Machine settlement, identity, address binding, and non-custodial invoice billing for MYT"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -32,3 +32,6 @@ Issues = "https://github.com/MYT-Core/MYT-Machine/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "myt_machine._version.__version__"}

@@ -28,6 +28,36 @@ class PaymentObservation:
     confirmations: int = 0
 
 
+def _prepare_invoice_proof(
+    request: PaymentRequest, artifact: dict[str, Any], required_confirmations: int
+) -> tuple[dict[str, Any], PaymentObservation | None]:
+    """Shared local-only preflight; no RPC or persistence before this succeeds."""
+    bounded_int(required_confirmations, "required confirmations", 1, MAX_CONFIRMATIONS)
+    if not isinstance(artifact, dict) or set(artifact) != _PROOF_FIELDS:
+        raise InputError("Invoice verification requires an exact-schema payment proof")
+    if type(artifact["version"]) is not int or artifact["version"] != 1:
+        raise InputError("Invalid payment proof version")
+    proof_text = artifact["proof"]
+    if (
+        not isinstance(proof_text, str)
+        or len(proof_text) > MAX_INVOICE_PROOF_BYTES
+        or _OUT_PROOF.fullmatch(proof_text) is None
+        or (len(proof_text) - 10) % 132 != 0
+    ):
+        raise InputError("Invoice verification requires a native OutProofV2")
+    proof = parse_proof_artifact(artifact)
+    reason = None
+    if proof["address"] != request.recipient_address:
+        reason = "wrong_recipient"
+    elif proof["message"] != request.proof_message:
+        reason = "wrong_request"
+    negative = (
+        PaymentObservation(False, reason, proof["txid"], request.proof_message)
+        if reason is not None else None
+    )
+    return proof, negative
+
+
 @runtime_checkable
 class PaymentRequestVerifier(Protocol):
     def validate_request(self, request: PaymentRequest) -> bool:
@@ -89,33 +119,16 @@ class WalletPaymentVerifier:
         *,
         required_confirmations: int = DEFAULT_CONFIRMATIONS,
     ) -> PaymentObservation:
-        bounded_int(
-            required_confirmations, "required confirmations", 1, MAX_CONFIRMATIONS
+        proof, local_failure = _prepare_invoice_proof(
+            request, artifact, required_confirmations
         )
-        if not isinstance(artifact, dict) or set(artifact) != _PROOF_FIELDS:
-            raise InputError(
-                "Invoice verification requires an exact-schema payment proof"
-            )
-        if type(artifact["version"]) is not int or artifact["version"] != 1:
-            raise InputError("Invalid payment proof version")
-        proof_text = artifact["proof"]
-        if (
-            not isinstance(proof_text, str)
-            or len(proof_text) > MAX_INVOICE_PROOF_BYTES
-            or _OUT_PROOF.fullmatch(proof_text) is None
-            or (len(proof_text) - 10) % 132 != 0
-        ):
-            raise InputError("Invoice verification requires a native OutProofV2")
-        proof = parse_proof_artifact(artifact)
+        if local_failure is not None:
+            return local_failure
         txid = proof["txid"]
 
         def negative(reason: str) -> PaymentObservation:
             return PaymentObservation(False, reason, txid, request.proof_message)
 
-        if proof["address"] != request.recipient_address:
-            return negative("wrong_recipient")
-        if proof["message"] != request.proof_message:
-            return negative("wrong_request")
         if not self.validate_request(request):
             return negative("invalid_recipient")
         # Reuse Phase 4A proof validation and native Wallet RPC verification.

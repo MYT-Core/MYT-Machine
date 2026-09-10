@@ -1,5 +1,6 @@
 """Public API for MYT settlement, identity, and address binding."""
 
+from ._version import __version__ as __version__
 from .amounts import ATOMIC_UNITS_PER_MYT, format_myt_amount, parse_myt_amount
 from .billing import BillingService, InvoiceVerification
 from .binding import (
@@ -100,5 +101,3 @@ __all__ = [
     "serialize_address_binding",
     "serialize_payment_request",
 ]
-
-__version__ = "0.5.0"

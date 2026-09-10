@@ -138,6 +138,29 @@ def run_reputation_command(args, stdin, client_factory, passphrase_loader):
             artifact, network=args.network
         )
         return {"valid": True, "id": artifact.id, "inserted": inserted}, True
+    if action == "record-settlement":
+        if not Path(args.invoice_db).is_file():
+            raise ConfigurationError("Invoice database does not exist")
+        if args.binding_file == "-" and args.proof_file == "-":
+            raise InputError("Only one artifact may use stdin")
+        try:
+            binding = parse_address_binding(
+                _load(args.binding_file, stdin, MAX_REPUTATION_BYTES)
+            )
+            proof = _load(args.proof_file, stdin, 131072)
+        except InputError:
+            raise InputError("Invalid binding or payment proof input") from None
+        # The service opens this path only after all verification succeeds.
+        return record_verified_settlement(
+            args.db,
+            SQLiteInvoiceStore(args.invoice_db),
+            client_factory(),
+            network=args.network,
+            invoice_id=args.invoice_id,
+            binding=binding,
+            proof=proof,
+            expected_machine_id=args.expected_machine_id,
+        ), True
     store = ReputationStore(args.db)
     if action == "get":
         artifact = store.get(args.id, network=args.network)
@@ -168,24 +191,3 @@ def run_reputation_command(args, stdin, client_factory, passphrase_loader):
             policy=policy,
             as_of=args.as_of,
         ), True
-    if not Path(args.invoice_db).is_file():
-        raise ConfigurationError("Invoice database does not exist")
-    if args.binding_file == "-" and args.proof_file == "-":
-        raise InputError("Only one artifact may use stdin")
-    try:
-        binding = parse_address_binding(
-            _load(args.binding_file, stdin, MAX_REPUTATION_BYTES)
-        )
-        proof = _load(args.proof_file, stdin, 131072)
-    except InputError:
-        raise InputError("Invalid binding or payment proof input") from None
-    return record_verified_settlement(
-        store,
-        SQLiteInvoiceStore(args.invoice_db),
-        client_factory(),
-        network=args.network,
-        invoice_id=args.invoice_id,
-        binding=binding,
-        proof=proof,
-        expected_machine_id=args.expected_machine_id,
-    ), True

@@ -24,6 +24,7 @@ from urllib.request import (
     parse_keqv_list,
 )
 
+from ._version import __version__
 from .errors import (
     ConfigurationError,
     RpcAuthenticationError,
@@ -359,7 +360,7 @@ class WalletRpcClient:
             headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "User-Agent": "myt-machine/0.3.0",
+                "User-Agent": f"myt-machine/{__version__}",
             },
             method="POST",
         )
