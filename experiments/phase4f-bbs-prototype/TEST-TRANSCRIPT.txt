@@ -1,0 +1,158 @@
+MYT MACHINE PHASE 4F EXPERIMENT - TEST TRANSCRIPT
+Recorded: 2026-09-11 (Europe/London)
+Platform: native Windows
+Status: EXPERIMENTAL - NOT FOR PRODUCTION
+
+COMMAND: node --version
+v22.19.0
+EXIT_CODE: 0
+
+COMMAND: npm --version
+10.9.3
+EXIT_CODE: 0
+
+COMMAND: Python --version
+Python 3.12.14
+EXIT_CODE: 0
+
+COMMAND: npm ls --all
+myt-phase4f-experiment@0.0.1 C:\Users\amber\Documents\Codex\2026-09-10\referenced-chatgpt-conversation-this-is-an-3\work\myt-machine-phase4f-publication\experiments\phase4f-bbs-prototype
+└─┬ @digitalbazaar/bbs-signatures@3.1.0
+  ├─┬ @noble/curves@2.4.0
+  │ └── @noble/hashes@2.4.0 deduped
+  └── @noble/hashes@2.4.0
+EXIT_CODE: 0
+
+COMMAND: npm test
+
+> myt-phase4f-experiment@0.0.1 pretest
+> npm run vectors
+
+
+> myt-phase4f-experiment@0.0.1 vectors
+> node scripts/generate-vectors.mjs
+
+generated C:\Users\amber\Documents\Codex\2026-09-10\referenced-chatgpt-conversation-this-is-an-3\work\myt-machine-phase4f-publication\experiments\phase4f-bbs-prototype\vectors\phase4f-v1.json
+raw BBS proof: 336 bytes
+complete presentation JSON: 3316 bytes
+
+> myt-phase4f-experiment@0.0.1 test
+> node scripts/run-tests.mjs
+
+test_concurrent_consumption_has_exactly_one_winner (test_bridges.DurableChallengeStoreTests.test_concurrent_consumption_has_exactly_one_winner) ... ok
+test_corrupt_stored_key_revocation_fails_closed (test_bridges.DurableChallengeStoreTests.test_corrupt_stored_key_revocation_fails_closed) ... ok
+test_corrupt_stored_request_fails_closed (test_bridges.DurableChallengeStoreTests.test_corrupt_stored_request_fails_closed) ... ok
+test_key_revocation_is_idempotent_and_persistent (test_bridges.DurableChallengeStoreTests.test_key_revocation_is_idempotent_and_persistent) ... ok
+test_survives_restart_and_rejects_replay (test_bridges.DurableChallengeStoreTests.test_survives_restart_and_rejects_replay) ... ok
+test_fake_snapshot_input_is_rejected (test_bridges.RealPhase4eAdapterTests.test_fake_snapshot_input_is_rejected) ... ok
+test_real_store_produces_bounded_assertion (test_bridges.RealPhase4eAdapterTests.test_real_store_produces_bounded_assertion) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.494s
+
+OK
+✔ real Phase 4E store feeds the BBS credential without disclosing value 37 (6029.2009ms)
+✔ accepted challenge remains consumed after verifier restart (2209.7691ms)
+✔ shared durable verifier state permits exactly one acceptance (2625.9456ms)
+✔ signed key revocation survives restart and blocks presentation (1520.2523ms)
+✔ Phase 4B framing matches the published v1 deterministic vector (4.3258ms)
+✔ valid end-to-end evaluator assertion and subject-control presentation passes (1956.2503ms)
+✔ selective disclosure hides exact metric and Phase 4E evidence digest (1141.6361ms)
+✔ BBS credential signature validates and message tampering fails (2279.7282ms)
+✔ raw proof is 336 bytes with exactly two hidden messages (1190.9943ms)
+✔ replaying a previously accepted presentation is rejected (1664.8994ms)
+✔ audience substitution invalidates the BBS presentation header (1292.1622ms)
+✔ challenge substitution invalidates the BBS presentation header (1453.6833ms)
+✔ requested-predicate substitution is rejected (1159.523ms)
+✔ disclosed claim tampering is rejected (1289.0454ms)
+✔ wrong BBS issuer authorization is rejected (895.222ms)
+✔ wrong Phase 4B subject controller is rejected (1133.715ms)
+✔ expired credential is rejected even when its BBS proof is valid (885.1165ms)
+✔ expired verifier challenge is rejected (899.7114ms)
+✔ valid evaluator key authorization passes (1005.0384ms)
+✔ tampered key authorization content is rejected (848.995ms)
+✔ cryptographically valid but expired key authorization is rejected (794.7679ms)
+✔ key authorization from an untrusted evaluator is rejected (851.0765ms)
+✔ key authorization with a wrong signed purpose is rejected (809.5886ms)
+✔ key authorization for the wrong signed network is rejected (823.5482ms)
+✔ valid Phase 4B-signed BBS key revocation verifies (859.7541ms)
+✔ tampered BBS key revocation is rejected (804.1823ms)
+✔ issuer refuses a persistently revoked BBS key (983.958ms)
+✔ issuer refuses a BBS secret key that does not match the authorization (865.4205ms)
+✔ two proofs from one credential are randomized and independently valid (1617.8625ms)
+✔ stored generated vector verifies as a standalone artifact (251.0873ms)
+✔ protocol contexts are stable and Phase 4B-compatible ASCII (0.1799ms)
+✔ encrypted BBS key round-trips and is bound to its public key ID (1085.7463ms)
+✔ wrong passphrase and wrong expected key ID fail closed (1088.2447ms)
+✔ authenticated encryption rejects a modified key file (1256.5292ms)
+✔ encrypted key creation never overwrites an existing file (1254.838ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27998.5109
+EXIT_CODE: 0
+
+COMMAND: npm run demo
+
+> myt-phase4f-experiment@0.0.1 demo
+> node src/demo.mjs
+
+{
+  "status": "EXPERIMENTAL-NOT-FOR-PRODUCTION",
+  "backend": "@digitalbazaar/bbs-signatures@3.1.0",
+  "architecture": [
+    "validated Phase 4E snapshot",
+    "local ReputationPolicy evaluation",
+    "bounded evaluator assertion",
+    "Phase 4B-authorized BBS issuer key",
+    "BBS credential",
+    "fresh verifier request bound into BBS proof",
+    "Phase 4B subject-control signature bound to that proof"
+  ],
+  "assertion_semantics": "Trusted evaluator asserted 37 >= 25; this is not a mathematical ZK range proof of a hidden integer.",
+  "disclosed": [
+    "schema",
+    "evaluator_machine_id",
+    "bbs_key_id",
+    "subject_machine_id",
+    "network",
+    "policy_digest",
+    "metric_id",
+    "predicate_metric_id",
+    "predicate_operator",
+    "predicate_threshold",
+    "predicate_result",
+    "issued_at",
+    "expires_at"
+  ],
+  "hidden": [
+    "phase4e_evidence_digest",
+    "metric_value"
+  ],
+  "predicate": {
+    "metric_id": "verified_recipient_settlement_events",
+    "operator": "gte",
+    "threshold": 25,
+    "result": true
+  },
+  "verification_valid": true,
+  "sizes": {
+    "raw_bbs_signature_bytes": 80,
+    "raw_bbs_proof_bytes": 336,
+    "bbs_proof_base64url_characters": 448,
+    "complete_credential_json_bytes": 926,
+    "complete_presentation_json_bytes": 3316,
+    "hidden_message_count": 2,
+    "disclosed_message_count": 13
+  }
+}
+EXIT_CODE: 0
+
+INSTALL OBSERVATION
+The pinned install added 3 packages and npm reported 0 vulnerabilities.
+See package-lock.json for exact tarball URLs and SHA-512 integrity values.
+This registry result is not an implementation audit or production approval.

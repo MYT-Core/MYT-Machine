@@ -1,0 +1,19 @@
+{
+  "name": "myt-phase4f-experiment",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Isolated experimental Phase 4F BBS selective-disclosure prototype for MYT Machine",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "demo": "node src/demo.mjs",
+    "vectors": "node scripts/generate-vectors.mjs",
+    "pretest": "npm run vectors",
+    "test": "node scripts/run-tests.mjs"
+  },
+  "dependencies": {
+    "@digitalbazaar/bbs-signatures": "3.1.0"
+  }
+}
