@@ -498,7 +498,7 @@
         "value": "1700003700"
       }
     ],
-    "bbs_proof": "i7TLGWlpkLnUuQQiW4r3wUtfc2k_MgjRzboNLkUXgZsjQHmyKMyQQ7Cm_-8H8k_chdfbWC1wEPeVoHaHyoduNtJf4WxETCEY7MWLxpO9YaW9IZT6odF7iyUwewhDxeLXicavJuy4YvoXgyYWFm1_qKRFb3xyZgkht1669Okt8TQ9-fWV9Ce624pgcL77gWqBXOxSUbSpGWWvjiB2rRhs76otw0yTEwCFuX-dFcuQOe1RY8sxnL4Sw5Z6DG4y8pnR8I97Jo0SpphYQ8Rovoy3NQJ2c-X1TWJi52ATpAEXlo29UlId63_Zenp6esRfdRDaCm61jVriKFWRKRPEGFF2cZUZiIT7R2v4tICPQUVl-LVnPQExNPmqv5WYnU27pFxlHvNInEkemfPE-XAmlht_uA7OIYiOkJN4MHDR8IWITyuR32z-ke-p2V-yUVb-jIk9",
+    "bbs_proof": "rJbnEF6RaNP4KtL6XipO-0DNb-AJEyYq2QvWryv7YhjXKgIH5DHuYCzjhT8C50YwqvxdoUd-pct8CbYW9Fb2PYarNIvPNSUw6iD_2H1cIkibo7FaiicqWNn2EniN-MTWoXq9abAVoRA_KMCwVmSDP4ReJRw8WFjxbtvEJ8RllO3nH3looGXo1cM3OZeMJSUjTpk3TP9-Zw6QmwoKpmudt8E2jevHRefRCDrk8DlrSvYm7mp0YWXW9MVf_w9GxuoXADgr1j2lUHdjBFgw59KJzHKkYEiU2HxdhN2gCim7g0nEgelZMv5LZTt8XbgkuF9gXSpnMS--o-IKtqXEc61vWzFRq3vRfOCM1wxT7SC0lnswQBiGthPDP-SpBchPBJsasiQ8iawA_l2NsLPzRKnO5VqTaopqv6edX-XNz4BY-S8o87234SNzTlsrm0AMkQjc",
     "subject_control": {
       "identity": {
         "algorithm": "ed25519",
@@ -508,7 +508,7 @@
         "version": 1
       },
       "context": "myt-machine/phase4f/subject-control/v1",
-      "signature": "vkCGl66hCNyFbLSXFiOjglR1J2iYIw1P0eTzMMk8BZhYC2vQfKZgX5ci8xOVjcccm0flUYeiKXJIHmo8TgDWBA"
+      "signature": "89JWVTOzxZB5l5ct4GpI_A3i-y-q4B0zIYjS7AkC_3H7-_19TQbD0Qw0WkE6PlYxRXxB6PBlZtM2uJleitpLAQ"
     }
   },
   "sizes": {

@@ -1,12 +1,13 @@
 # Exact dependency record
 
-Recorded on 2026-09-10 on native Windows.
+Recorded on 2026-09-11 on native Windows.
 
 ## Runtime
 
 - Node.js: 22.19.0
 - npm: 10.9.3
 - operating system: Windows (native, not WSL)
+- Python: 3.13.7 in the production-candidate verification run
 
 The effective Node.js floor is 20.19.0 because the locked Noble 2.4.0 packages
 declare that minimum, even though Digital Bazaar's package itself declares
@@ -26,4 +27,8 @@ zero known npm audit vulnerabilities at test time; that is a registry finding,
 not a cryptographic audit or security approval.
 
 No ZKryptium package is installed. Node's built-in `node:crypto` supplies
-Ed25519 and SHA-256 for the Phase 4B-compatible layers.
+Ed25519, SHA-256, scrypt, and AES-256-GCM for the Phase 4B-compatible and
+encrypted-key layers. Python's standard-library `sqlite3` supplies durable
+replay/revocation state. The real Phase 4E adapter imports the existing MYT
+Machine v0.5.1 package and its already-declared `cryptography>=50.0.0`
+dependency; no additional Python or native SQLite package was added.

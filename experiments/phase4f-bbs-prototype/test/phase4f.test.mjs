@@ -8,10 +8,12 @@ import {
   DISCLOSED_MESSAGE_INDEXES,
   HIDDEN_MESSAGE_INDEXES,
   KEY_AUTH_CONTEXT,
+  KEY_REVOCATION_CONTEXT,
   MESSAGE_SCHEMA,
   SUBJECT_CONTROL_CONTEXT,
   b64url,
   createKeyAuthorization,
+  createKeyRevocation,
   createMachineIdentity,
   createPresentation,
   createSubjectControl,
@@ -19,6 +21,7 @@ import {
   signPhase4b,
   verifyCredentialSignature,
   verifyKeyAuthorization,
+  verifyKeyRevocation,
   verifyPresentation,
 } from '../src/phase4f.mjs';
 import {FIXED_TIME, TEST_SEEDS, buildFixture} from '../src/fixture.mjs';
@@ -297,6 +300,64 @@ test('key authorization for the wrong signed network is rejected', async () => {
   assert.match(result.reason, /wrong network/);
 });
 
+test('valid Phase 4B-signed BBS key revocation verifies', async () => {
+  const fixture = await buildFixture();
+  const revocation = createKeyRevocation({
+    evaluatorIdentity: fixture.evaluator,
+    authorization: fixture.authorization,
+    revokedAt: FIXED_TIME,
+    reason: 'compromised',
+  });
+  const result = verifyKeyRevocation({
+    revocation,
+    authorization: fixture.authorization,
+    trustedEvaluatorMachineId: fixture.evaluator.publicIdentity.machine_id,
+    expectedNetwork: 'testnet',
+    now: FIXED_TIME,
+  });
+  assert.equal(result.valid, true);
+  assert.equal(result.keyId, fixture.authorization.key_id);
+});
+
+test('tampered BBS key revocation is rejected', async () => {
+  const fixture = await buildFixture();
+  const revocation = createKeyRevocation({
+    evaluatorIdentity: fixture.evaluator,
+    authorization: fixture.authorization,
+    revokedAt: FIXED_TIME,
+  });
+  revocation.reason = 'compromised';
+  const result = verifyKeyRevocation({
+    revocation,
+    authorization: fixture.authorization,
+    trustedEvaluatorMachineId: fixture.evaluator.publicIdentity.machine_id,
+    expectedNetwork: 'testnet',
+    now: FIXED_TIME,
+  });
+  assert.equal(result.valid, false);
+  assert.match(result.reason, /ID does not match/);
+});
+
+test('issuer refuses a persistently revoked BBS key', async () => {
+  const fixture = await buildFixture();
+  const revocation = createKeyRevocation({
+    evaluatorIdentity: fixture.evaluator,
+    authorization: fixture.authorization,
+    revokedAt: FIXED_TIME,
+    reason: 'retired',
+  });
+  await assert.rejects(issueCredential({
+    bbsSecretKey: fixture.bbsKeyPair.secretKey,
+    authorization: fixture.authorization,
+    trustedEvaluatorMachineId: fixture.evaluator.publicIdentity.machine_id,
+    evaluation: fixture.evaluation,
+    predicate: fixture.predicate,
+    issuedAt: FIXED_TIME,
+    expiresAt: FIXED_TIME + 3_600,
+    keyStatusStore: {lookupKeyRevocation: () => revocation},
+  }), /issuer key is revoked/);
+});
+
 test('issuer refuses a BBS secret key that does not match the authorization', async () => {
   const fixture = await buildFixture();
   await assert.rejects(issueCredential({
@@ -345,5 +406,6 @@ test('stored generated vector verifies as a standalone artifact', async () => {
 
 test('protocol contexts are stable and Phase 4B-compatible ASCII', () => {
   assert.equal(KEY_AUTH_CONTEXT, 'myt-machine/phase4f/bbs-key-authorization/v1');
+  assert.equal(KEY_REVOCATION_CONTEXT, 'myt-machine/phase4f/bbs-key-revocation/v1');
   assert.equal(SUBJECT_CONTROL_CONTEXT, 'myt-machine/phase4f/subject-control/v1');
 });

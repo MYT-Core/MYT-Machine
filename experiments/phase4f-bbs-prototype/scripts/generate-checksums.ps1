@@ -5,7 +5,9 @@ $taskOutput = Join-Path $taskRoot 'SHA256SUMS.txt'
 $taskFiles = Get-ChildItem -LiteralPath $taskRoot -Recurse -File | Where-Object {
     $_.FullName -ne $taskOutput -and
     $_.FullName -notmatch '\\node_modules\\' -and
-    $_.FullName -notmatch '\\.npm-cache\\'
+    $_.FullName -notmatch '\\.npm-cache\\' -and
+    $_.FullName -notmatch '\\__pycache__\\' -and
+    $_.Extension -ne '.pyc'
 } | Sort-Object FullName
 
 $taskLines = foreach ($taskFile in $taskFiles) {
@@ -14,5 +16,10 @@ $taskLines = foreach ($taskFile in $taskFiles) {
     "$taskHash  $taskRelativePath"
 }
 
-[System.IO.File]::WriteAllLines($taskOutput, $taskLines)
+$taskUtf8NoBom = [System.Text.UTF8Encoding]::new($false)
+[System.IO.File]::WriteAllText(
+    $taskOutput,
+    ($taskLines -join "`n") + "`n",
+    $taskUtf8NoBom
+)
 Write-Output "WROTE=$taskOutput"

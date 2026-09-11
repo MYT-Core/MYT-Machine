@@ -2,10 +2,12 @@
 
 ## Verdict
 
-The composition is feasible as a small experiment with
+The composition is feasible as a production-candidate experiment with
 `@digitalbazaar/bbs-signatures@3.1.0`. The positive flow works and the specified
 substitution, tampering, replay, expiry, issuer, subject, and key-authorization
-failures are rejected.
+failures are rejected. The candidate now uses the real Phase 4E store/policy
+boundary, durable one-use verifier state, signed BBS-key revocations, and
+encrypted BBS-key files.
 
 This is **not a production approval**. The backend's tagged 3.1.0 source says it
 implements the IETF BBS draft-06 interface, while the current standards work has
@@ -18,8 +20,8 @@ Primary implementation reference:
 
 ## Meaning of the proof
 
-The evaluator receives an already validated Phase 4E snapshot and applies a
-caller-local policy compatible with v0.5.0's concepts: trusted issuers,
+The evaluator opens the real Phase 4E evidence store and applies a caller-local
+policy compatible with v0.5.0's concepts: trusted issuers,
 per-issuer caps, age bounds, optional settlement linkage, explicit network, and
 explicit `as_of`. It then computes the bounded catalog predicate:
 
@@ -35,12 +37,14 @@ the evaluator asserted `true`; it does not evaluate `37 >= 25` inside zero
 knowledge. The evaluator sees the input and exact metric. Trust in the evaluator
 and its Phase 4E validation is therefore part of the security model.
 
-The Phase 4E adapter in this experiment accepts an object explicitly labelled
-`validated-phase4e-v0.5.x-snapshot`. It exercises local policy semantics but does
-not reimplement the production Phase 4E artifact parser or Ed25519 verification.
-A real integration must call the existing, hardened `ReputationStore` and
-`reputation_summary` boundary rather than trusting arbitrary JSON bearing that
-label.
+The deterministic vector still uses a synthetic Phase 4E snapshot so that its
+BBS-only test fixture remains portable. The production-candidate adapter is
+different: `bridge/phase4e_adapter.py` opens the actual v0.5.1
+`ReputationStore`, calls the actual `reputation_summary`, and rejects extra input
+such as a caller-supplied snapshot. It takes before/after manifests of the
+append-only store around evaluation and fails if evidence changes. The hidden
+evidence digest commits to the validated artifact/settlement digests and the
+exact summary without exporting those records to the JavaScript boundary.
 
 ## Signed credential messages
 
@@ -92,18 +96,60 @@ zero knowledge that this public identity equals a hidden BBS message. Hiding the
 subject while retaining non-transferability needs an additional, carefully
 reviewed equality/link-secret construction. This prototype does not invent one.
 
-## Replay and lifecycle limits
+## Durable replay state
 
-The in-memory challenge store demonstrates expiry and one-time consumption, but
-it is not durable or atomic across processes. Production needs a bounded,
-persistent store with an atomic unused-to-used transition. Cryptographic proof
-verification alone does not stop replay.
+`bridge/challenge_store.py` stores the complete canonical verifier request in a
+service-owned SQLite database. It uses one connection and `BEGIN IMMEDIATE` per
+operation, `synchronous=FULL`, a unique challenge key, bounded capacity, and an
+atomic `used_at IS NULL` update. Verification returns success only after that
+update wins. Restart, competing-consumer, corruption, expiry, and replay tests
+fail closed. Expired records may be pruned only after a bounded retention
+period; "durable" does not mean storing random nonces forever.
 
-The prototype treats evaluator key authorization as needing to be active at
+The JavaScript bridge currently starts a short-lived Python process per state
+operation. It passes public challenge/status data through bounded canonical JSON
+and never invokes a shell. A deployed service should replace process startup
+with an authenticated local service or equally narrow in-process binding after
+that interface receives review.
+
+Every production-style issuance, presentation, and verification call must pass
+the durable key-status store; verification must also pass the durable challenge
+store. The optional in-memory/no-status paths in the low-level module are kept
+only for the original deterministic vector tests, not as deployment defaults.
+
+## BBS issuer-key revocation
+
+The evaluator's Phase 4B key signs a domain-separated revocation bound to the
+exact authorization ID, BBS key ID, evaluator, network, reason, and claimed
+time. A durable store accepts only a cryptographically verified revocation,
+treats identical imports as idempotent, rejects conflicting replacements, and
+revalidates the signed artifact during presentation verification. A valid
+revocation excludes the key regardless of its claimed time, matching Phase 4E's
+fail-safe revocation semantics.
+
+This is local revocation enforcement, not global revocation delivery. A
+production network still needs a signed status-distribution/freshness policy.
+Phase 4B identity compromise recovery also remains a separate protocol problem.
+
+## Encrypted BBS issuer-key storage
+
+`src/secure-key-store.mjs` encrypts the 32-byte BBS secret scalar with
+AES-256-GCM under a scrypt-derived wrapping key (`N=131072`, `r=8`, `p=1`). The
+authenticated metadata binds the ciphertext to its derived BBS public-key ID.
+Files are created exclusively and never overwritten; Unix files must remain
+regular, single-link mode `0600` files. Windows deployments must add an
+operator-only NTFS ACL. Passphrase and wrapping-key copies are overwritten on a
+best-effort basis after use.
+
+This protects a copied file at rest. It does not protect a compromised service
+account or process, guarantee JavaScript garbage-collector zeroization, or
+provide hardware-backed/non-exportable BLS12-381 operations.
+
+The candidate treats evaluator key authorization as needing to be active at
 verification time and gives credentials a maximum 24-hour lifetime. Credential
-revocation, evaluator-key revocation, rotation, status distribution, clock
-policy, multi-process races, secure secret-key storage, side-channel analysis,
-and denial-of-service limits need separate designs.
+revocation, remote status distribution, complete rotation ceremonies, clock
+policy, Phase 4B recovery, side-channel analysis, and deployment denial-of-
+service limits still need separate review or design.
 
 ## Tested failures
 
@@ -118,7 +164,12 @@ and denial-of-service limits need separate designs.
 - tampered, expired, untrusted-evaluator, wrong-purpose, and wrong-network BBS
   key authorizations;
 - issuer secret key not matching the authorized public key;
-- full credential message tampering.
+- full credential message tampering;
+- replay after verifier restart and competing durable consumers;
+- corrupt durable challenge state;
+- signed, persisted BBS key revocation and revocation tampering;
+- wrong BBS key-file passphrase/key ID, modified ciphertext, and overwrite;
+- caller-supplied fake Phase 4E snapshot input.
 
 Two presentations derived from the same credential are also checked to have
 different randomized BBS proof bytes while both verify with fresh challenge

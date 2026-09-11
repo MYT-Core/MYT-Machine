@@ -13,6 +13,7 @@ const encoder = new TextEncoder();
 export const CIPHERSUITE = 'BLS12-381-SHA-256';
 export const CREDENTIAL_HEADER = utf8('MYT-MACHINE-PHASE4F-CREDENTIAL-V1\n');
 export const KEY_AUTH_CONTEXT = 'myt-machine/phase4f/bbs-key-authorization/v1';
+export const KEY_REVOCATION_CONTEXT = 'myt-machine/phase4f/bbs-key-revocation/v1';
 export const SUBJECT_CONTROL_CONTEXT = 'myt-machine/phase4f/subject-control/v1';
 export const PRESENTATION_PREFIX = 'MYT-MACHINE-PHASE4F-PRESENTATION-V1\n';
 
@@ -57,6 +58,13 @@ const MAX_TIMESTAMP = 253402300799;
 const KEY_AUTH_FIELDS = Object.freeze([
   'type', 'version', 'evaluator', 'ciphersuite', 'bbs_public_key',
   'key_id', 'purpose', 'network', 'not_before', 'expires_at',
+]);
+const KEY_REVOCATION_FIELDS = Object.freeze([
+  'type', 'version', 'evaluator_machine_id', 'bbs_key_id',
+  'authorization_id', 'network', 'revoked_at', 'reason',
+]);
+const KEY_REVOCATION_REASONS = new Set([
+  'unspecified', 'compromised', 'rotated', 'retired',
 ]);
 
 export const PREDICATE_CATALOG = Object.freeze({
@@ -296,10 +304,18 @@ export function verifyPhase4b(identityDocument, context, message, signature) {
   }
 }
 
-function bbsKeyId(publicKey, ciphersuite = CIPHERSUITE) {
+export function bbsKeyId(publicKey, ciphersuite = CIPHERSUITE) {
   return `myt-phase4f-bbs-key-v1:${sha256Hex(Buffer.concat([
     Buffer.from(ciphersuite, 'ascii'), Buffer.from([0]), Buffer.from(publicKey),
   ]))}`;
+}
+
+function keyRevocationBody(revocation) {
+  return Object.fromEntries(KEY_REVOCATION_FIELDS.map(key => [key, revocation[key]]));
+}
+
+function keyRevocationContent(body) {
+  return canonicalPayload('MYT-PHASE4F-BBS-KEY-REVOCATION-V1\n', body);
 }
 
 function keyAuthorizationBody(authorization) {
@@ -408,6 +424,133 @@ export function verifyKeyAuthorization({
   } catch(error) {
     return {valid: false, reason: error.message};
   }
+}
+
+export function createKeyRevocation({
+  evaluatorIdentity,
+  authorization,
+  revokedAt,
+  reason = 'unspecified',
+}) {
+  validateIdentityDocument(evaluatorIdentity.publicIdentity);
+  assertSafeInteger(revokedAt, 'Key revocation time');
+  if(!KEY_REVOCATION_REASONS.has(reason)) {
+    throw new Error('Unsupported BBS key revocation reason');
+  }
+  if(authorization.evaluator?.machine_id !==
+    evaluatorIdentity.publicIdentity.machine_id) {
+    throw new Error('BBS key revocation evaluator does not own the authorization');
+  }
+  const authorizationCheckTime = Math.min(
+    Math.max(revokedAt, authorization.not_before),
+    authorization.expires_at - 1
+  );
+  const authResult = verifyKeyAuthorization({
+    authorization,
+    trustedEvaluatorMachineId: evaluatorIdentity.publicIdentity.machine_id,
+    expectedNetwork: authorization.network,
+    now: authorizationCheckTime,
+  });
+  if(!authResult.valid) {
+    throw new Error(authResult.reason);
+  }
+  const body = {
+    type: 'myt-phase4f-bbs-key-revocation',
+    version: 1,
+    evaluator_machine_id: evaluatorIdentity.publicIdentity.machine_id,
+    bbs_key_id: authorization.key_id,
+    authorization_id: authorization.id,
+    network: authorization.network,
+    revoked_at: revokedAt,
+    reason,
+  };
+  const content = keyRevocationContent(body);
+  return {
+    ...body,
+    id: `myt-phase4f-key-revocation-v1:${sha256Hex(content)}`,
+    signature: signPhase4b(evaluatorIdentity, KEY_REVOCATION_CONTEXT, content),
+  };
+}
+
+export function verifyKeyRevocation({
+  revocation,
+  authorization,
+  trustedEvaluatorMachineId,
+  expectedNetwork,
+  now,
+}) {
+  try {
+    assertExactKeys(
+      revocation,
+      [...KEY_REVOCATION_FIELDS, 'id', 'signature'],
+      'BBS key revocation'
+    );
+    if(revocation.type !== 'myt-phase4f-bbs-key-revocation' ||
+      revocation.version !== 1 || !KEY_REVOCATION_REASONS.has(revocation.reason)) {
+      throw new Error('Unsupported BBS key revocation profile');
+    }
+    assertSafeInteger(revocation.revoked_at, 'Key revocation time');
+    const authResult = verifyKeyAuthorization({
+      authorization,
+      trustedEvaluatorMachineId,
+      expectedNetwork,
+      now,
+    });
+    if(!authResult.valid) {
+      throw new Error(authResult.reason);
+    }
+    if(revocation.evaluator_machine_id !== trustedEvaluatorMachineId ||
+      revocation.evaluator_machine_id !== authorization.evaluator.machine_id ||
+      revocation.bbs_key_id !== authorization.key_id ||
+      revocation.authorization_id !== authorization.id ||
+      revocation.network !== expectedNetwork) {
+      throw new Error('BBS key revocation does not match its authorization');
+    }
+    const body = keyRevocationBody(revocation);
+    const content = keyRevocationContent(body);
+    if(revocation.id !==
+      `myt-phase4f-key-revocation-v1:${sha256Hex(content)}`) {
+      throw new Error('BBS key revocation ID does not match its content');
+    }
+    if(!verifyPhase4b(
+      authorization.evaluator,
+      KEY_REVOCATION_CONTEXT,
+      content,
+      revocation.signature
+    )) {
+      throw new Error('BBS key revocation Phase 4B signature is invalid');
+    }
+    return {valid: true, keyId: authorization.key_id};
+  } catch(error) {
+    return {valid: false, reason: error.message};
+  }
+}
+
+async function rejectRevokedKey({
+  keyStatusStore,
+  authorization,
+  trustedEvaluatorMachineId,
+  expectedNetwork,
+  now,
+}) {
+  if(!keyStatusStore) {
+    return;
+  }
+  const revocation = await keyStatusStore.lookupKeyRevocation(authorization.key_id);
+  if(revocation === null) {
+    return;
+  }
+  const result = verifyKeyRevocation({
+    revocation,
+    authorization,
+    trustedEvaluatorMachineId,
+    expectedNetwork,
+    now,
+  });
+  if(!result.valid) {
+    throw new Error(`Stored BBS key revocation is invalid: ${result.reason}`);
+  }
+  throw new Error('BBS issuer key is revoked');
 }
 
 function validatePolicy(policy) {
@@ -574,6 +717,7 @@ export async function issueCredential({
   predicate,
   issuedAt,
   expiresAt,
+  keyStatusStore,
 }) {
   assertSafeInteger(issuedAt, 'Credential issued-at');
   assertSafeInteger(expiresAt, 'Credential expiry');
@@ -589,6 +733,13 @@ export async function issueCredential({
   if(!authResult.valid) {
     throw new Error(authResult.reason);
   }
+  await rejectRevokedKey({
+    keyStatusStore,
+    authorization,
+    trustedEvaluatorMachineId,
+    expectedNetwork: evaluation.network,
+    now: issuedAt,
+  });
   if(!(bbsSecretKey instanceof Uint8Array) || bbsSecretKey.length !== 32) {
     throw new Error('BBS secret key must contain exactly 32 bytes');
   }
@@ -720,6 +871,36 @@ export function presentationHeader(request) {
   return canonicalPayload(PRESENTATION_PREFIX, request);
 }
 
+export function createPresentationRequest({
+  audience,
+  network,
+  policyDigest,
+  requestedPredicate,
+  now,
+  lifetimeSeconds = 120,
+  nonce,
+}) {
+  assertSafeInteger(now, 'Challenge creation time');
+  assertSafeInteger(lifetimeSeconds, 'Challenge lifetime', 1, 300);
+  const challengeBytes = nonce ?? randomBytes(32);
+  if(!(challengeBytes instanceof Uint8Array) || challengeBytes.length !== 32) {
+    throw new Error('Verifier challenge must contain exactly 32 bytes');
+  }
+  const request = {
+    type: 'myt-phase4f-presentation-request',
+    version: 1,
+    challenge: b64url(challengeBytes),
+    audience,
+    network,
+    policy_digest: policyDigest,
+    requested_predicate: requestedPredicate,
+    created_at: now,
+    expires_at: now + lifetimeSeconds,
+  };
+  validatePresentationRequest(request);
+  return request;
+}
+
 export class ChallengeStore {
   #records = new Map();
 
@@ -732,23 +913,15 @@ export class ChallengeStore {
     lifetimeSeconds = 120,
     nonce,
   }) {
-    assertSafeInteger(now, 'Challenge creation time');
-    assertSafeInteger(lifetimeSeconds, 'Challenge lifetime', 1, 300);
-    const challengeBytes = nonce ?? randomBytes(32);
-    if(!(challengeBytes instanceof Uint8Array) || challengeBytes.length !== 32) {
-      throw new Error('Verifier challenge must contain exactly 32 bytes');
-    }
-    const request = {
-      type: 'myt-phase4f-presentation-request',
-      version: 1,
-      challenge: b64url(challengeBytes),
+    const request = createPresentationRequest({
       audience,
       network,
-      policy_digest: policyDigest,
-      requested_predicate: requestedPredicate,
-      created_at: now,
-      expires_at: now + lifetimeSeconds,
-    };
+      policyDigest,
+      requestedPredicate,
+      now,
+      lifetimeSeconds,
+      nonce,
+    });
     this.register(request);
     return request;
   }
@@ -816,6 +989,7 @@ export async function createPresentation({
   subjectIdentity,
   request,
   now,
+  keyStatusStore,
 }) {
   validateCredentialShape(credential);
   validatePresentationRequest(request);
@@ -831,6 +1005,13 @@ export async function createPresentation({
   if(!authResult.valid) {
     throw new Error(authResult.reason);
   }
+  await rejectRevokedKey({
+    keyStatusStore,
+    authorization,
+    trustedEvaluatorMachineId: authorization.evaluator.machine_id,
+    expectedNetwork: request.network,
+    now,
+  });
   if(!(await verifyCredentialSignature({credential, authorization}))) {
     throw new Error('Holder received an invalid BBS credential');
   }
@@ -910,6 +1091,7 @@ export async function verifyPresentation({
   challengeStore,
   trustedEvaluatorMachineId,
   now,
+  keyStatusStore,
 }) {
   try {
     assertSafeInteger(now, 'Verification time');
@@ -926,7 +1108,9 @@ export async function verifyPresentation({
       throw new Error('Unsupported presentation profile');
     }
     validatePresentationRequest(presentation.request);
-    const storedRequest = challengeStore.lookup(presentation.request.challenge, now);
+    const storedRequest = await challengeStore.lookup(
+      presentation.request.challenge, now
+    );
     if(canonicalJson(storedRequest) !== canonicalJson(presentation.request)) {
       throw new Error('Presentation request does not match verifier state');
     }
@@ -939,6 +1123,13 @@ export async function verifyPresentation({
     if(!authResult.valid) {
       throw new Error(authResult.reason);
     }
+    await rejectRevokedKey({
+      keyStatusStore,
+      authorization: presentation.key_authorization,
+      trustedEvaluatorMachineId,
+      expectedNetwork: storedRequest.network,
+      now,
+    });
     const values = validateDisclosedMessages(presentation.disclosed_messages);
     if(values.get('schema') !== 'myt-phase4f-reputation-credential-v1' ||
       values.get('evaluator_machine_id') !== trustedEvaluatorMachineId ||
@@ -1008,7 +1199,7 @@ export async function verifyPresentation({
       throw new Error('Phase 4B subject control signature is invalid');
     }
 
-    challengeStore.consume(storedRequest.challenge);
+    await challengeStore.consume(storedRequest.challenge, now);
     return {
       valid: true,
       evaluator_machine_id: trustedEvaluatorMachineId,

@@ -1,5 +1,5 @@
 MYT MACHINE PHASE 4F EXPERIMENT - TEST TRANSCRIPT
-Recorded: 2026-09-10 (Europe/London)
+Recorded: 2026-09-11 (Europe/London)
 Platform: native Windows
 Status: EXPERIMENTAL - NOT FOR PRODUCTION
 
@@ -11,8 +11,12 @@ COMMAND: npm --version
 10.9.3
 EXIT_CODE: 0
 
+COMMAND: Python --version
+Python 3.12.14
+EXIT_CODE: 0
+
 COMMAND: npm ls --all
-myt-phase4f-experiment@0.0.1 C:\Users\amber\Documents\Codex\2026-09-10\referenced-chatgpt-conversation-this-is-an-3\work\myt-phase4f-experiment
+myt-phase4f-experiment@0.0.1 C:\Users\amber\Documents\Codex\2026-09-10\referenced-chatgpt-conversation-this-is-an-3\work\myt-machine-phase4f-publication\experiments\phase4f-bbs-prototype
 └─┬ @digitalbazaar/bbs-signatures@3.1.0
   ├─┬ @noble/curves@2.4.0
   │ └── @noble/hashes@2.4.0 deduped
@@ -28,45 +32,68 @@ COMMAND: npm test
 > myt-phase4f-experiment@0.0.1 vectors
 > node scripts/generate-vectors.mjs
 
-generated C:\Users\amber\Documents\Codex\2026-09-10\referenced-chatgpt-conversation-this-is-an-3\work\myt-phase4f-experiment\vectors\phase4f-v1.json
+generated C:\Users\amber\Documents\Codex\2026-09-10\referenced-chatgpt-conversation-this-is-an-3\work\myt-machine-phase4f-publication\experiments\phase4f-bbs-prototype\vectors\phase4f-v1.json
 raw BBS proof: 336 bytes
 complete presentation JSON: 3316 bytes
 
 > myt-phase4f-experiment@0.0.1 test
-> node --test --test-reporter=spec
+> node scripts/run-tests.mjs
 
-✔ Phase 4B framing matches the published v1 deterministic vector (4.3369ms)
-✔ valid end-to-end evaluator assertion and subject-control presentation passes (1363.1522ms)
-✔ selective disclosure hides exact metric and Phase 4E evidence digest (827.0125ms)
-✔ BBS credential signature validates and message tampering fails (1187.8027ms)
-✔ raw proof is 336 bytes with exactly two hidden messages (763.3722ms)
-✔ replaying a previously accepted presentation is rejected (1060.2102ms)
-✔ audience substitution invalidates the BBS presentation header (1049.8759ms)
-✔ challenge substitution invalidates the BBS presentation header (1043.3297ms)
-✔ requested-predicate substitution is rejected (753.4531ms)
-✔ disclosed claim tampering is rejected (959.0926ms)
-✔ wrong BBS issuer authorization is rejected (753.6556ms)
-✔ wrong Phase 4B subject controller is rejected (1060.0932ms)
-✔ expired credential is rejected even when its BBS proof is valid (773.8271ms)
-✔ expired verifier challenge is rejected (786.293ms)
-✔ valid evaluator key authorization passes (790.4792ms)
-✔ tampered key authorization content is rejected (781.5908ms)
-✔ cryptographically valid but expired key authorization is rejected (752.5079ms)
-✔ key authorization from an untrusted evaluator is rejected (806.1215ms)
-✔ key authorization with a wrong signed purpose is rejected (780.9064ms)
-✔ key authorization for the wrong signed network is rejected (837.6738ms)
-✔ issuer refuses a BBS secret key that does not match the authorization (793.8603ms)
-✔ two proofs from one credential are randomized and independently valid (1724.5618ms)
-✔ stored generated vector verifies as a standalone artifact (276.7074ms)
-✔ protocol contexts are stable and Phase 4B-compatible ASCII (0.1911ms)
-ℹ tests 24
+test_concurrent_consumption_has_exactly_one_winner (test_bridges.DurableChallengeStoreTests.test_concurrent_consumption_has_exactly_one_winner) ... ok
+test_corrupt_stored_key_revocation_fails_closed (test_bridges.DurableChallengeStoreTests.test_corrupt_stored_key_revocation_fails_closed) ... ok
+test_corrupt_stored_request_fails_closed (test_bridges.DurableChallengeStoreTests.test_corrupt_stored_request_fails_closed) ... ok
+test_key_revocation_is_idempotent_and_persistent (test_bridges.DurableChallengeStoreTests.test_key_revocation_is_idempotent_and_persistent) ... ok
+test_survives_restart_and_rejects_replay (test_bridges.DurableChallengeStoreTests.test_survives_restart_and_rejects_replay) ... ok
+test_fake_snapshot_input_is_rejected (test_bridges.RealPhase4eAdapterTests.test_fake_snapshot_input_is_rejected) ... ok
+test_real_store_produces_bounded_assertion (test_bridges.RealPhase4eAdapterTests.test_real_store_produces_bounded_assertion) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.494s
+
+OK
+✔ real Phase 4E store feeds the BBS credential without disclosing value 37 (6029.2009ms)
+✔ accepted challenge remains consumed after verifier restart (2209.7691ms)
+✔ shared durable verifier state permits exactly one acceptance (2625.9456ms)
+✔ signed key revocation survives restart and blocks presentation (1520.2523ms)
+✔ Phase 4B framing matches the published v1 deterministic vector (4.3258ms)
+✔ valid end-to-end evaluator assertion and subject-control presentation passes (1956.2503ms)
+✔ selective disclosure hides exact metric and Phase 4E evidence digest (1141.6361ms)
+✔ BBS credential signature validates and message tampering fails (2279.7282ms)
+✔ raw proof is 336 bytes with exactly two hidden messages (1190.9943ms)
+✔ replaying a previously accepted presentation is rejected (1664.8994ms)
+✔ audience substitution invalidates the BBS presentation header (1292.1622ms)
+✔ challenge substitution invalidates the BBS presentation header (1453.6833ms)
+✔ requested-predicate substitution is rejected (1159.523ms)
+✔ disclosed claim tampering is rejected (1289.0454ms)
+✔ wrong BBS issuer authorization is rejected (895.222ms)
+✔ wrong Phase 4B subject controller is rejected (1133.715ms)
+✔ expired credential is rejected even when its BBS proof is valid (885.1165ms)
+✔ expired verifier challenge is rejected (899.7114ms)
+✔ valid evaluator key authorization passes (1005.0384ms)
+✔ tampered key authorization content is rejected (848.995ms)
+✔ cryptographically valid but expired key authorization is rejected (794.7679ms)
+✔ key authorization from an untrusted evaluator is rejected (851.0765ms)
+✔ key authorization with a wrong signed purpose is rejected (809.5886ms)
+✔ key authorization for the wrong signed network is rejected (823.5482ms)
+✔ valid Phase 4B-signed BBS key revocation verifies (859.7541ms)
+✔ tampered BBS key revocation is rejected (804.1823ms)
+✔ issuer refuses a persistently revoked BBS key (983.958ms)
+✔ issuer refuses a BBS secret key that does not match the authorization (865.4205ms)
+✔ two proofs from one credential are randomized and independently valid (1617.8625ms)
+✔ stored generated vector verifies as a standalone artifact (251.0873ms)
+✔ protocol contexts are stable and Phase 4B-compatible ASCII (0.1799ms)
+✔ encrypted BBS key round-trips and is bound to its public key ID (1085.7463ms)
+✔ wrong passphrase and wrong expected key ID fail closed (1088.2447ms)
+✔ authenticated encryption rejects a modified key file (1256.5292ms)
+✔ encrypted key creation never overwrites an existing file (1254.838ms)
+ℹ tests 35
 ℹ suites 0
-ℹ pass 24
+ℹ pass 35
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 20128.5216
+ℹ duration_ms 27998.5109
 EXIT_CODE: 0
 
 COMMAND: npm run demo
