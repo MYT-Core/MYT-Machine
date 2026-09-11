@@ -1,0 +1,535 @@
+{
+  "metadata": {
+    "status": "EXPERIMENTAL-NOT-FOR-PRODUCTION",
+    "vector_version": 1,
+    "backend": "@digitalbazaar/bbs-signatures@3.1.0",
+    "ciphersuite": "BLS12-381-SHA-256",
+    "note": "Seeds are public test fixtures. BBS proofs are randomized, so regeneration changes proof bytes while preserving verification."
+  },
+  "public_test_seeds": {
+    "evaluator_ed25519": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+    "subject_ed25519": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "wrong_subject_ed25519": "1f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100",
+    "attester_a_ed25519": "f0e0d0c0b0a090807060504030201000102030405060708090a0b0c0d0e0f001",
+    "attester_b_ed25519": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+    "bbs_key_material": "4f3c2d1e0f102132435465768798a9bacbdcedfe0f1e2d3c4b5a69788796a5b4",
+    "alternate_bbs_key_material": "b4a5968778695a4b3c2d1e0ffeeddbca9b8a7968574635241302f1e0d1c2b3a4"
+  },
+  "phase4e_snapshot": {
+    "source": "validated-phase4e-v0.5.x-snapshot",
+    "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+    "network": "testnet",
+    "settlement_events": [
+      {
+        "evidence_digest": "ce546c0178a6e7e3704948ba24e4af346b2ddc2f005ff9b73cdc8711ff8cbbd0",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "259342c0f13d54523d36ebd3131dfa0dc7a008689c8a0d03a8d4513d24f5340e",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "95189580a0a4c002c8634f07d73bd11eb0add8a500d836b37df76fa40f06f788",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "689b4c5793dcbf3be77ff0ef880bd86befa22095a14aa27517e8019689b41e0b",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "5a3551d84185675f55d3fa64fd2fa3d439efe196c7a5dd46e27d17bca0068557",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "58dba5b1f72bac406c1978256e32e5d257e504dee80865f8ac1230784a96b4cd",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "91979dbb37144ca0edb45582520fa0a8de58f5dc1a165e838af4126df70e43b9",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "f6af901fa44359fecc180e7e0fd45eac0ff3712e0568ee1d849b57440d688db4",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "f5ece31b45d8505c6f98babdca8f579bc75be7b1ea461ec7819d074a62500cad",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "409782ca15122c3ba6981d016b21ecb172ffd5a2820ee40bf76d05709a3fcbdc",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "667d056f2e9056d50c076ee50d3f156e48475e2b1112c4aba11ae8e5667cd2ab",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "fde89fabe27f5f7e120c2bbb6b9041ed1b7b3eb789ab23f4a90fa96c335ba700",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "d77b3e1c9e6c5064ea8d4c17c619d3c37e078ff7e3228f8f27d1f5c8aa4c4d21",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "9b58b3c8f5b3010788fe1b2a42dc3ce14281b89e228e9ab1b5abb7cb41129f1c",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "f36361431d66a1d9963a1f2badc31c414bcf1a20485d6dd51c2f3001a5fdd850",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "69ce60dd90f65fd859c8a851d74b84a760fb25e7f3f9d03e6b1d3622adc71a9d",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "04e4502c92651f4c48ffcd24702df82879f077b72ceeb083897f8206da6be54d",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "fa292613f1cbd35cdb346c8f53c82cb30abfaae7d84bc516ac9cfe7d8aac7dd0",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "c8043c0a285b48f3ebf1dccc5658a05913145d0580144784d5bdd9d482bd4123",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "3991751c1570388320c9d0064ff49a2e4d8ccde83795e39ad1c684c9206f1229",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "2a106a28092dceba617f8776970ef5201a2e0a47cbbef60a1015abba2f7e92e4",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "b5ee0a048869238660b726a267111c898a6081017cf438d318d3f90b82309bd5",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "433eb07c259f6097410ff7f4444074d8964b4a7539bd612e702f6432a669f3b6",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "9d20b543cbea043e24d48f1232f9902793e4cf6474f9fa1ab3f3e8a0a2d72938",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "10572480d516b8a06538c86fb3581ee7155a355d4cb727e491803a5745f90507",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "7a5176e119eb163947afefcfa87df3ae86599a2394ee9bd636dec4908ad1559f",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "cdb578a5c1702e115b55ac8515bfbd6b04c80b8473bc54cc4c235ef647f9db74",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "fd7725c2d04ee5b91a4f9188313548b4c9a418521e5879b724b39dfeac85846a",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "3dbfd8057dd79e47e8316535003d3bd784e5469b959800b1a17e4a0126a26fd2",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "cd2805c8da3abce4a94d9a5dccddbd90343948af9d52226fab5501f6ba24d3f5",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "31ecef4d1317de74bc6a539e9de682827d2a927615b975681ca00f575ffbbe18",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "472410be045a271a7822e52ed9534e18d0dfcdec895cb5230c10b402c2c74982",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "c875fabb74ebf2ee989399e2e2473c31a7f25482c9d3df792183c4e7a4fd2b94",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "a4d1839da8e22ee4fd393ef4558f0ee8d394b31c398e2873832b8de2152d842e",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "6b7ffee48ee64a04331e09c4c82930d737e191e1ecf4c7da21e77bbb93cfa8b3",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "368ff4bc6348cb5b5544b49d869cce39c3296be2701720d3764c0b450fd51050",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      },
+      {
+        "evidence_digest": "edf45b6b9990473ef858d06b406b72aff83d589db755208a0bc92c42469f6bbc",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "verified": true
+      }
+    ],
+    "attestations": [
+      {
+        "id": "myt-reputation-v1:cba5cf84e90c0dc15483a6f2fe5b409f18e6d6a0f2ed11a6b46d0f18b59f8536",
+        "issuer_machine_id": "myt-machine-v1:kjqvpijiamanitjhkk6kejgem6wypzhnxpreuic2wiwzpju66b5a",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "issued_at": 1700000040,
+        "outcome": "POSITIVE",
+        "evidence_digest": "ce546c0178a6e7e3704948ba24e4af346b2ddc2f005ff9b73cdc8711ff8cbbd0",
+        "signature_valid": true,
+        "revoked": false
+      },
+      {
+        "id": "myt-reputation-v1:7279900205011cdb48393f16dbbb5dc3fb581904fbe105962858521f560450c3",
+        "issuer_machine_id": "myt-machine-v1:gwstzg44hoaelnv64tqbc4rs2g3jvk5zbkyhlx5pqd6jmdpwmgya",
+        "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "network": "testnet",
+        "issued_at": 1700000010,
+        "outcome": "POSITIVE",
+        "evidence_digest": "259342c0f13d54523d36ebd3131dfa0dc7a008689c8a0d03a8d4513d24f5340e",
+        "signature_valid": true,
+        "revoked": false
+      }
+    ]
+  },
+  "reputation_policy": {
+    "trusted_issuers": [
+      "myt-machine-v1:gwstzg44hoaelnv64tqbc4rs2g3jvk5zbkyhlx5pqd6jmdpwmgya",
+      "myt-machine-v1:kjqvpijiamanitjhkk6kejgem6wypzhnxpreuic2wiwzpju66b5a"
+    ],
+    "max_per_issuer": 1,
+    "min_age": 0,
+    "max_age": 86400,
+    "require_settlement": true
+  },
+  "evaluator_output": {
+    "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+    "network": "testnet",
+    "phase4e_evidence_digest": "c3e28583e2520da103e42b72924e9b610b4d93c4251d43574142c4c628760f36",
+    "policy_digest": "148cf79a1b69a20ec5a33a9d625b2e7d6edb97cd5122089b9e7b3787d4df06dd",
+    "objective_local_observations": {
+      "verified_recipient_settlement_events": 37
+    },
+    "signed_opinions": {
+      "cryptographically_valid_attestations": 2,
+      "revoked_attestations": 0
+    },
+    "local_policy_output": {
+      "policy": {
+        "trusted_issuers": [
+          "myt-machine-v1:gwstzg44hoaelnv64tqbc4rs2g3jvk5zbkyhlx5pqd6jmdpwmgya",
+          "myt-machine-v1:kjqvpijiamanitjhkk6kejgem6wypzhnxpreuic2wiwzpju66b5a"
+        ],
+        "max_per_issuer": 1,
+        "min_age": 0,
+        "max_age": 86400,
+        "require_settlement": true
+      },
+      "as_of": 1700000100,
+      "accepted_attestations": 2,
+      "unique_machine_identity_issuers": 2,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    }
+  },
+  "bounded_predicate_assertion": {
+    "metric_id": "verified_recipient_settlement_events",
+    "operator": "gte",
+    "threshold": 25,
+    "result": true,
+    "metric_value": 37
+  },
+  "evaluator_identity": {
+    "algorithm": "ed25519",
+    "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+    "public_key": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+    "type": "myt-machine-identity",
+    "version": 1
+  },
+  "subject_identity": {
+    "algorithm": "ed25519",
+    "machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+    "public_key": "A6EHv_POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg",
+    "type": "myt-machine-identity",
+    "version": 1
+  },
+  "bbs_issuer_public_key": "lQtxmMt-95IMWx8PB0T9gPNsqxm4Redbsnf7bgoBoBSDQEJo5Qzad7aIKm5j8AG9EhaUBMWEAJXuoHG4QDBnhQwZ4M2y7Bq5iusEsUvkezOiokngjdQz_MEjIr4ii_er",
+  "key_authorization": {
+    "type": "myt-phase4f-bbs-key-authorization",
+    "version": 1,
+    "evaluator": {
+      "algorithm": "ed25519",
+      "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+      "public_key": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+      "type": "myt-machine-identity",
+      "version": 1
+    },
+    "ciphersuite": "BLS12-381-SHA-256",
+    "bbs_public_key": "lQtxmMt-95IMWx8PB0T9gPNsqxm4Redbsnf7bgoBoBSDQEJo5Qzad7aIKm5j8AG9EhaUBMWEAJXuoHG4QDBnhQwZ4M2y7Bq5iusEsUvkezOiokngjdQz_MEjIr4ii_er",
+    "key_id": "myt-phase4f-bbs-key-v1:12643a8dc61f440ea669d8957db9c0aa91b6d1344b1709163b76e4e2865f3b97",
+    "purpose": "myt-phase4f-reputation-credential",
+    "network": "testnet",
+    "not_before": 1700000000,
+    "expires_at": 1700086500,
+    "id": "myt-phase4f-key-auth-v1:c6beb8a16d52cd1f747adf4fd88c8443f8f22f0614a6cfe1bb26e0359a9b13a7",
+    "signature": "3plRdLwIkSzJLzVEe7R7jzbuDGtef4O1yzQkAX82aJGK6Tq-4ubvGKiwxLG60Xf8pYoinwyXBRJjwFqJhe8PCQ"
+  },
+  "credential": {
+    "type": "myt-phase4f-reputation-credential",
+    "version": 1,
+    "ciphersuite": "BLS12-381-SHA-256",
+    "key_id": "myt-phase4f-bbs-key-v1:12643a8dc61f440ea669d8957db9c0aa91b6d1344b1709163b76e4e2865f3b97",
+    "header": "TVlULU1BQ0hJTkUtUEhBU0U0Ri1DUkVERU5USUFMLVYxCg",
+    "messages": [
+      "myt-phase4f-reputation-credential-v1",
+      "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+      "myt-phase4f-bbs-key-v1:12643a8dc61f440ea669d8957db9c0aa91b6d1344b1709163b76e4e2865f3b97",
+      "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+      "testnet",
+      "148cf79a1b69a20ec5a33a9d625b2e7d6edb97cd5122089b9e7b3787d4df06dd",
+      "c3e28583e2520da103e42b72924e9b610b4d93c4251d43574142c4c628760f36",
+      "verified_recipient_settlement_events",
+      "37",
+      "verified_recipient_settlement_events",
+      "gte",
+      "25",
+      "true",
+      "1700000100",
+      "1700003700"
+    ],
+    "bbs_signature": "pbx-gju6j3FGsV9krkB7QuLwJJ8DCUzCewIbFMQLq_k_6Ud79bUD6qOk5qqOmMF6SovrQqXOxm911OPdqdNtz28tiOSAI2hqirgdZdY4x2E"
+  },
+  "presentation_request": {
+    "type": "myt-phase4f-presentation-request",
+    "version": 1,
+    "challenge": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+    "audience": "https://verifier.example/myt-machine",
+    "network": "testnet",
+    "policy_digest": "148cf79a1b69a20ec5a33a9d625b2e7d6edb97cd5122089b9e7b3787d4df06dd",
+    "requested_predicate": {
+      "metric_id": "verified_recipient_settlement_events",
+      "operator": "gte",
+      "threshold": 25,
+      "required_result": true
+    },
+    "created_at": 1700000100,
+    "expires_at": 1700000400
+  },
+  "presentation": {
+    "type": "myt-phase4f-reputation-presentation",
+    "version": 1,
+    "request": {
+      "type": "myt-phase4f-presentation-request",
+      "version": 1,
+      "challenge": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+      "audience": "https://verifier.example/myt-machine",
+      "network": "testnet",
+      "policy_digest": "148cf79a1b69a20ec5a33a9d625b2e7d6edb97cd5122089b9e7b3787d4df06dd",
+      "requested_predicate": {
+        "metric_id": "verified_recipient_settlement_events",
+        "operator": "gte",
+        "threshold": 25,
+        "required_result": true
+      },
+      "created_at": 1700000100,
+      "expires_at": 1700000400
+    },
+    "key_authorization": {
+      "type": "myt-phase4f-bbs-key-authorization",
+      "version": 1,
+      "evaluator": {
+        "algorithm": "ed25519",
+        "machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+        "public_key": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "type": "myt-machine-identity",
+        "version": 1
+      },
+      "ciphersuite": "BLS12-381-SHA-256",
+      "bbs_public_key": "lQtxmMt-95IMWx8PB0T9gPNsqxm4Redbsnf7bgoBoBSDQEJo5Qzad7aIKm5j8AG9EhaUBMWEAJXuoHG4QDBnhQwZ4M2y7Bq5iusEsUvkezOiokngjdQz_MEjIr4ii_er",
+      "key_id": "myt-phase4f-bbs-key-v1:12643a8dc61f440ea669d8957db9c0aa91b6d1344b1709163b76e4e2865f3b97",
+      "purpose": "myt-phase4f-reputation-credential",
+      "network": "testnet",
+      "not_before": 1700000000,
+      "expires_at": 1700086500,
+      "id": "myt-phase4f-key-auth-v1:c6beb8a16d52cd1f747adf4fd88c8443f8f22f0614a6cfe1bb26e0359a9b13a7",
+      "signature": "3plRdLwIkSzJLzVEe7R7jzbuDGtef4O1yzQkAX82aJGK6Tq-4ubvGKiwxLG60Xf8pYoinwyXBRJjwFqJhe8PCQ"
+    },
+    "disclosed_messages": [
+      {
+        "index": 0,
+        "name": "schema",
+        "value": "myt-phase4f-reputation-credential-v1"
+      },
+      {
+        "index": 1,
+        "name": "evaluator_machine_id",
+        "value": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa"
+      },
+      {
+        "index": 2,
+        "name": "bbs_key_id",
+        "value": "myt-phase4f-bbs-key-v1:12643a8dc61f440ea669d8957db9c0aa91b6d1344b1709163b76e4e2865f3b97"
+      },
+      {
+        "index": 3,
+        "name": "subject_machine_id",
+        "value": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa"
+      },
+      {
+        "index": 4,
+        "name": "network",
+        "value": "testnet"
+      },
+      {
+        "index": 5,
+        "name": "policy_digest",
+        "value": "148cf79a1b69a20ec5a33a9d625b2e7d6edb97cd5122089b9e7b3787d4df06dd"
+      },
+      {
+        "index": 7,
+        "name": "metric_id",
+        "value": "verified_recipient_settlement_events"
+      },
+      {
+        "index": 9,
+        "name": "predicate_metric_id",
+        "value": "verified_recipient_settlement_events"
+      },
+      {
+        "index": 10,
+        "name": "predicate_operator",
+        "value": "gte"
+      },
+      {
+        "index": 11,
+        "name": "predicate_threshold",
+        "value": "25"
+      },
+      {
+        "index": 12,
+        "name": "predicate_result",
+        "value": "true"
+      },
+      {
+        "index": 13,
+        "name": "issued_at",
+        "value": "1700000100"
+      },
+      {
+        "index": 14,
+        "name": "expires_at",
+        "value": "1700003700"
+      }
+    ],
+    "bbs_proof": "i7TLGWlpkLnUuQQiW4r3wUtfc2k_MgjRzboNLkUXgZsjQHmyKMyQQ7Cm_-8H8k_chdfbWC1wEPeVoHaHyoduNtJf4WxETCEY7MWLxpO9YaW9IZT6odF7iyUwewhDxeLXicavJuy4YvoXgyYWFm1_qKRFb3xyZgkht1669Okt8TQ9-fWV9Ce624pgcL77gWqBXOxSUbSpGWWvjiB2rRhs76otw0yTEwCFuX-dFcuQOe1RY8sxnL4Sw5Z6DG4y8pnR8I97Jo0SpphYQ8Rovoy3NQJ2c-X1TWJi52ATpAEXlo29UlId63_Zenp6esRfdRDaCm61jVriKFWRKRPEGFF2cZUZiIT7R2v4tICPQUVl-LVnPQExNPmqv5WYnU27pFxlHvNInEkemfPE-XAmlht_uA7OIYiOkJN4MHDR8IWITyuR32z-ke-p2V-yUVb-jIk9",
+    "subject_control": {
+      "identity": {
+        "algorithm": "ed25519",
+        "machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+        "public_key": "A6EHv_POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg",
+        "type": "myt-machine-identity",
+        "version": 1
+      },
+      "context": "myt-machine/phase4f/subject-control/v1",
+      "signature": "vkCGl66hCNyFbLSXFiOjglR1J2iYIw1P0eTzMMk8BZhYC2vQfKZgX5ci8xOVjcccm0flUYeiKXJIHmo8TgDWBA"
+    }
+  },
+  "sizes": {
+    "raw_bbs_signature_bytes": 80,
+    "raw_bbs_proof_bytes": 336,
+    "bbs_proof_base64url_characters": 448,
+    "complete_credential_json_bytes": 926,
+    "complete_presentation_json_bytes": 3316,
+    "hidden_message_count": 2,
+    "disclosed_message_count": 13
+  },
+  "expected_verification": {
+    "valid": true,
+    "evaluator_machine_id": "myt-machine-v1:ghejgw76kap2alahrz3yjxqp2exn2bq4hexrjnj4ly56inqyonfa",
+    "subject_machine_id": "myt-machine-v1:ht7gvb2iwvzp3t6vditiivgewhxbcwnx6jcxfx3xf5koybvob4pa",
+    "predicate": {
+      "metric_id": "verified_recipient_settlement_events",
+      "operator": "gte",
+      "threshold": 25,
+      "result": true
+    },
+    "proof_bytes": 336
+  }
+}
