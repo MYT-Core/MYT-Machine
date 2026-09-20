@@ -20,6 +20,12 @@ jobs:
         cryptography: [floor, latest]
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+      - name: Install explicit locked optional BBS companion
+        working-directory: companions/bbs
+        run: npm ci --ignore-scripts --no-fund
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
@@ -43,8 +49,16 @@ jobs:
         run: |
           python -c "import cryptography, myt_machine; print('cryptography=' + cryptography.__version__); print('myt_machine=' + myt_machine.__version__)"
           python -m pip check
+      - name: Locate explicit test-only Node runtime
+        run: python -c "import os,shutil; open(os.environ['GITHUB_ENV'],'a',encoding='utf-8').write('MYT_TEST_NODE='+shutil.which('node')+'\n')"
       - name: Unit and CLI tests
         run: python -m unittest discover -s tests -v
+      - name: Independent Phase 4F attacks
+        env:
+          PYTHONPATH: tests
+        run: |
+          python -m unittest discover -s review/phase4f -p "attack*.py" -v
+          python review/phase4f/final_adversarial.py
       - name: Separate legacy regression gates
         run: |
           python -m unittest discover -s tests -p "test_amounts.py"
@@ -65,11 +79,51 @@ jobs:
       - name: Compile modules
         run: python -m compileall -q src tests
 
+  bbs-runtime:
+    name: BBS / ${{ matrix.os }} / Node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['24.20.0', '24.21.0']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install exact companion
+        working-directory: companions/bbs
+        run: npm ci --ignore-scripts --no-fund
+      - name: Native protocol, header and key tests
+        run: node --test companions/bbs/test/core.test.mjs companions/bbs/test/header.test.mjs
+      - name: Install Python candidate with dependency floor
+        run: python -m pip install -e . cryptography==50.0.0
+      - name: Locate Node
+        run: python -c "import os,shutil; open(os.environ['GITHUB_ENV'],'a',encoding='utf-8').write('MYT_TEST_NODE='+shutil.which('node')+'\n')"
+      - name: Real companion integration
+        run: python -m unittest discover -s tests -p 'test_disclosure*.py' -v
+      - name: Independent attacks
+        env:
+          PYTHONPATH: tests
+        run: |
+          python -m unittest discover -s review/phase4f -p "attack*.py" -v
+          python review/phase4f/final_adversarial.py
+
   audit:
     name: Dependency security audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+      - name: Install explicit locked optional BBS companion
+        working-directory: companions/bbs
+        run: npm ci --ignore-scripts --no-fund
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -81,6 +135,11 @@ jobs:
         run: python -m pip install --disable-pip-version-check -e . pip-audit bandit ruff
       - name: Audit installed dependencies
         run: python -m pip_audit
+      - name: Pinned companion security audit
+        working-directory: companions/bbs
+        run: npm audit
+      - name: Verify registry integrity and dependency hooks
+        run: python review/phase4f/check_supply.py
       - name: Static checks
         run: |
           ruff check src tests
@@ -89,9 +148,15 @@ jobs:
   package:
     name: Build and smoke-test wheel and source distribution
     runs-on: ubuntu-latest
-    needs: [test, audit]
+    needs: [test, audit, bbs-runtime]
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+      - name: Install explicit locked optional BBS companion
+        working-directory: companions/bbs
+        run: npm ci --ignore-scripts --no-fund
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -101,6 +166,11 @@ jobs:
         run: python -m pip install --disable-pip-version-check build twine
       - name: Build distributions
         run: python -m build . --outdir dist
+      - name: Pack explicit optional companion
+        working-directory: companions/bbs
+        run: npm pack --ignore-scripts --pack-destination ../../dist
+      - name: Inspect candidate archive contents
+        run: python review/phase4f/inspect_packages.py dist
       - name: Verify wheel metadata
         run: |
           python - <<'PY'
@@ -130,7 +200,7 @@ jobs:
           tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/invoices.md$'
           tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/api-billing.md$'
       - name: Check distribution metadata
-        run: python -m twine check dist/*
+        run: python -m twine check dist/*.whl dist/*.tar.gz
       - name: Verify Phase 4E source distribution documentation
         run: |
           tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/reputation.md$'
@@ -224,12 +294,21 @@ jobs:
           assert settlement['command'] == 'status' and settlement['success'] is False
           assert settlement['error']['code'] == 'invalid_configuration'
           PY
+      - name: Locate Node for clean-wheel integration
+        run: python -c "import os,shutil; open(os.environ['GITHUB_ENV'],'a',encoding='utf-8').write('MYT_TEST_NODE='+shutil.which('node')+'\n')"
       - name: Clean-wheel billing E2E and regression tests
         run: |
           cd /tmp
           /tmp/myt-machine-wheel/bin/python -m unittest discover -s "$GITHUB_WORKSPACE/tests" -v
+      - name: Clean-wheel CLI E2E with separately packed keyless verifier
+        run: |
+          mkdir /tmp/myt-packed-bbs
+          tar -xzf dist/myt-core-bbs-companion-*.tgz -C /tmp/myt-packed-bbs
+          (cd /tmp/myt-packed-bbs/package && npm ci --ignore-scripts --no-fund)
+          cd /tmp
+          /tmp/myt-machine-wheel/bin/python "$GITHUB_WORKSPACE/review/phase4f/clean_wheel_e2e.py" --node "$(command -v node)" --companion-entry /tmp/myt-packed-bbs/package/src/cli.mjs --vector "$GITHUB_WORKSPACE/docs/phase4f-header-vector.json"
       - uses: actions/upload-artifact@v7
         with:
-          name: myt-machine-settlement-v0.5.1
+          name: myt-machine-phase4f-unreleased-candidate
           path: dist/*
           if-no-files-found: error

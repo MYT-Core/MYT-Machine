@@ -1,0 +1,128 @@
+{
+  "credential": {
+    "authorization": {
+      "evaluator": {
+        "algorithm": "ed25519",
+        "machine_id": "myt-machine-v1:bmoc4lfqfmtryqbynccqhwzm2f2rjgptnqcedglnd5kb5xand2hq",
+        "public_key": "hrOlHbDxE8f7bgmhq8vP_qgjMa6FjRuKTcZXFttyk7c",
+        "type": "myt-machine-identity",
+        "version": 1
+      },
+      "id": "myt-bbs-authorization-v1:12b11a30853962a2f95a16203f79e129392b888fca2e07fad1b9d1ea12cab9b1",
+      "signature": "GjhWl2_2M7KA9N4hQm7LOt9mXzG2iuRCjEgf_rXzHJcecQxkkd38M1gv1Kda_qIe4XZxjwxX8PipKydLjWYtDA",
+      "statement": {
+        "bbs_key_id": "myt-bbs-key-v1:3edc989679cbdd2f2fb8228f1ede8a22bb01f6c6550ecb188a619238f8e47c83",
+        "bbs_public_key": "jzmFmqs0dDlWvtUB9fCBDcpfcT6kAsMBnVwuJ-usUBstIIotewfjQ7E8EM9vxNyaGUStnWCjODBnrvLaNU4Lc1Eq5jSgQYBKaMN9etVHlNt6anLkvMbc4aPsFgwtvsKp",
+        "ciphersuite": "BLS12-381-SHA-256",
+        "expires_at": 1789834501,
+        "network": "testnet",
+        "not_before": 1789748101,
+        "purpose": "myt-reputation-selective-disclosure-v1"
+      },
+      "type": "myt-reputation-issuer-authorization",
+      "version": 1
+    },
+    "claims": {
+      "as_of": 1789748101,
+      "expires_at": 1789751701,
+      "issued_at": 1789748101,
+      "metric_id": "verified_recipient_settlement_events",
+      "network": "testnet",
+      "policy_digest": "8b458ff38ab433aed1e652b40066f4a91d7e68b9303e13ec9197442875705b8f",
+      "predicates": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "subject_machine_id": "myt-machine-v1:4o6ucm5yb2s6pfl5oa3flu25kpwebe3dgrehfxbafvzwlqmaicoq"
+    },
+    "signature": "qOInu1-yBHzfzlB3YastvVAOubQ4ywQo6sYFpLEUK-c3y3bU1d9rroVWegzs4ZiIHRlsXrpZDFpAKL55nFK-QgQEOaVG2pMJxmluI-mGl4I",
+    "type": "myt-reputation-credential",
+    "version": 1
+  },
+  "presentation": {
+    "authorization": {
+      "evaluator": {
+        "algorithm": "ed25519",
+        "machine_id": "myt-machine-v1:bmoc4lfqfmtryqbynccqhwzm2f2rjgptnqcedglnd5kb5xand2hq",
+        "public_key": "hrOlHbDxE8f7bgmhq8vP_qgjMa6FjRuKTcZXFttyk7c",
+        "type": "myt-machine-identity",
+        "version": 1
+      },
+      "id": "myt-bbs-authorization-v1:12b11a30853962a2f95a16203f79e129392b888fca2e07fad1b9d1ea12cab9b1",
+      "signature": "GjhWl2_2M7KA9N4hQm7LOt9mXzG2iuRCjEgf_rXzHJcecQxkkd38M1gv1Kda_qIe4XZxjwxX8PipKydLjWYtDA",
+      "statement": {
+        "bbs_key_id": "myt-bbs-key-v1:3edc989679cbdd2f2fb8228f1ede8a22bb01f6c6550ecb188a619238f8e47c83",
+        "bbs_public_key": "jzmFmqs0dDlWvtUB9fCBDcpfcT6kAsMBnVwuJ-usUBstIIotewfjQ7E8EM9vxNyaGUStnWCjODBnrvLaNU4Lc1Eq5jSgQYBKaMN9etVHlNt6anLkvMbc4aPsFgwtvsKp",
+        "ciphersuite": "BLS12-381-SHA-256",
+        "expires_at": 1789834501,
+        "network": "testnet",
+        "not_before": 1789748101,
+        "purpose": "myt-reputation-selective-disclosure-v1"
+      },
+      "type": "myt-reputation-issuer-authorization",
+      "version": 1
+    },
+    "claims": {
+      "as_of": 1789748101,
+      "expires_at": 1789751701,
+      "issued_at": 1789748101,
+      "metric_id": "verified_recipient_settlement_events",
+      "network": "testnet",
+      "policy_digest": "8b458ff38ab433aed1e652b40066f4a91d7e68b9303e13ec9197442875705b8f",
+      "subject_machine_id": "myt-machine-v1:4o6ucm5yb2s6pfl5oa3flu25kpwebe3dgrehfxbafvzwlqmaicoq"
+    },
+    "proof": "rikAkHVR75tVCgQsK5WAa-qqGr-Pj72-jOeCd3CYOrGkna_j8lZxm9CuE6WAnQxKsf9PRlZqsJfILrrbPtyXM9pYzMFZAYckNAXxzG_p0w0rSjK6zzATXBpITXNreyWHlJ4AacuO72tqapWwx-t4Pch-AEsZA_XFxtueQ2bRoFvvkyxKhKpOehfapUiei6AmUlPHLPzgnlHgtnWEXHDv2NVFkj4QlD9CZtpQ4HWdWMllbwSYYWqnpm_rS1X4X8jG9xSTmny96Qaly9kOlHJIOyiD9Ud5RUkc8d2JEJHB6F8nPNcW8CumNwHJAR06J-W6Ps7U-bOXpmq-G4ekSIi0u3t34vyxARk2p5amJHrTIQgFtNuHX-BBmlULXIYpWG58XCZN7g-CaYD7YVe6_2p-jDlU0AGMfFxcpElzySj3RSDoLRzpdn38z9CqwHIpsyQsEJmZv11qddzLXTLlOhlK8RRfGShSRel-QI0DGddesMREDgEu1Bd4uDX7dXuksNZV14LJvF9Qg0cwSwMm6oq-WA",
+    "request": {
+      "audience": "verifier.example",
+      "challenge": "lt2FOne1iSXa36u682hZ5P8PL5VgV_jnN12CYQZa-LU",
+      "expected_evaluator_machine_id": "myt-machine-v1:bmoc4lfqfmtryqbynccqhwzm2f2rjgptnqcedglnd5kb5xand2hq",
+      "expected_issuer_key_id": "myt-bbs-key-v1:3edc989679cbdd2f2fb8228f1ede8a22bb01f6c6550ecb188a619238f8e47c83",
+      "expected_subject_machine_id": "myt-machine-v1:4o6ucm5yb2s6pfl5oa3flu25kpwebe3dgrehfxbafvzwlqmaicoq",
+      "expires_at": 1789748222,
+      "metric_id": "verified_recipient_settlement_events",
+      "network": "testnet",
+      "not_before": 1789748102,
+      "policy_digest": "8b458ff38ab433aed1e652b40066f4a91d7e68b9303e13ec9197442875705b8f",
+      "purpose": "myt-reputation-selective-disclosure-v1",
+      "threshold": 25,
+      "type": "myt-reputation-disclosure-request",
+      "version": 1
+    },
+    "subject_control": {
+      "identity": {
+        "algorithm": "ed25519",
+        "machine_id": "myt-machine-v1:4o6ucm5yb2s6pfl5oa3flu25kpwebe3dgrehfxbafvzwlqmaicoq",
+        "public_key": "uwSv-KQKyD5_jafzpJjwpCSDKh6mkx6EtFa7GDbIVic",
+        "type": "myt-machine-identity",
+        "version": 1
+      },
+      "signature": "877qwwJbb7XNLO1s83VJOKwGYKjl8wr4_tYdeOxROj2Da6qkE47pHGNa5mHzd9hv6tbJxkpilGOATlokbb_AAQ"
+    },
+    "type": "myt-reputation-disclosure-presentation",
+    "version": 1
+  },
+  "presentation_header_base64url": "TVlULVJFUFVUQVRJT04tRElTQ0xPU1VSRS1QUkVTRU5UQVRJT04tVjEKeyJhdWRpZW5jZSI6InZlcmlmaWVyLmV4YW1wbGUiLCJjaGFsbGVuZ2UiOiJsdDJGT25lMWlTWGEzNnU2ODJoWjVQOFBMNVZnVl9qbk4xMkNZUVphLUxVIiwiZXhwZWN0ZWRfZXZhbHVhdG9yX21hY2hpbmVfaWQiOiJteXQtbWFjaGluZS12MTpibW9jNGxmcWZtdHJ5cWJ5bmNjcWh3em0yZjJyamdwdG5xY2VkZ2xuZDVrYjV4YW5kMmhxIiwiZXhwZWN0ZWRfaXNzdWVyX2tleV9pZCI6Im15dC1iYnMta2V5LXYxOjNlZGM5ODk2NzljYmRkMmYyZmI4MjI4ZjFlZGU4YTIyYmIwMWY2YzY1NTBlY2IxODhhNjE5MjM4ZjhlNDdjODMiLCJleHBlY3RlZF9zdWJqZWN0X21hY2hpbmVfaWQiOiJteXQtbWFjaGluZS12MTo0bzZ1Y201eWIyczZwZmw1b2EzZmx1MjVrcHdlYmUzZGdyZWhmeGJhZnZ6d2xxbWFpY29xIiwiZXhwaXJlc19hdCI6MTc4OTc0ODIyMiwibWV0cmljX2lkIjoidmVyaWZpZWRfcmVjaXBpZW50X3NldHRsZW1lbnRfZXZlbnRzIiwibmV0d29yayI6InRlc3RuZXQiLCJub3RfYmVmb3JlIjoxNzg5NzQ4MTAyLCJwb2xpY3lfZGlnZXN0IjoiOGI0NThmZjM4YWI0MzNhZWQxZTY1MmI0MDA2NmY0YTkxZDdlNjhiOTMwM2UxM2VjOTE5NzQ0Mjg3NTcwNWI4ZiIsInB1cnBvc2UiOiJteXQtcmVwdXRhdGlvbi1zZWxlY3RpdmUtZGlzY2xvc3VyZS12MSIsInRocmVzaG9sZCI6MjUsInR5cGUiOiJteXQtcmVwdXRhdGlvbi1kaXNjbG9zdXJlLXJlcXVlc3QiLCJ2ZXJzaW9uIjoxfQ",
+  "presentation_header_hex": "4d59542d52455055544154494f4e2d444953434c4f535552452d50524553454e544154494f4e2d56310a7b2261756469656e6365223a2276657269666965722e6578616d706c65222c226368616c6c656e6765223a226c7432464f6e653169535861333675363832685a355038504c355667565f6a6e4e31324359515a612d4c55222c2265787065637465645f6576616c7561746f725f6d616368696e655f6964223a226d79742d6d616368696e652d76313a626d6f63346c6671666d7472797162796e63637168777a6d326632726a6770746e71636564676c6e64356b623578616e64326871222c2265787065637465645f6973737565725f6b65795f6964223a226d79742d6262732d6b65792d76313a33656463393839363739636264643266326662383232386631656465386132326262303166366336353530656362313838613631393233386638653437633833222c2265787065637465645f7375626a6563745f6d616368696e655f6964223a226d79742d6d616368696e652d76313a346f3675636d35796232733670666c356f6133666c7532356b70776562653364677265686678626166767a776c716d6169636f71222c22657870697265735f6174223a313738393734383232322c226d65747269635f6964223a2276657269666965645f726563697069656e745f736574746c656d656e745f6576656e7473222c226e6574776f726b223a22746573746e6574222c226e6f745f6265666f7265223a313738393734383130322c22706f6c6963795f646967657374223a2238623435386666333861623433336165643165363532623430303636663461393164376536386239333033653133656339313937343432383735373035623866222c22707572706f7365223a226d79742d72657075746174696f6e2d73656c6563746976652d646973636c6f737572652d7631222c227468726573686f6c64223a32352c2274797065223a226d79742d72657075746174696f6e2d646973636c6f737572652d72657175657374222c2276657273696f6e223a317d",
+  "proof_bytes": 400,
+  "purpose": "PUBLIC TEST ONLY; CSPRNG-generated ephemeral keys discarded",
+  "request": {
+    "audience": "verifier.example",
+    "challenge": "lt2FOne1iSXa36u682hZ5P8PL5VgV_jnN12CYQZa-LU",
+    "expected_evaluator_machine_id": "myt-machine-v1:bmoc4lfqfmtryqbynccqhwzm2f2rjgptnqcedglnd5kb5xand2hq",
+    "expected_issuer_key_id": "myt-bbs-key-v1:3edc989679cbdd2f2fb8228f1ede8a22bb01f6c6550ecb188a619238f8e47c83",
+    "expected_subject_machine_id": "myt-machine-v1:4o6ucm5yb2s6pfl5oa3flu25kpwebe3dgrehfxbafvzwlqmaicoq",
+    "expires_at": 1789748222,
+    "metric_id": "verified_recipient_settlement_events",
+    "network": "testnet",
+    "not_before": 1789748102,
+    "policy_digest": "8b458ff38ab433aed1e652b40066f4a91d7e68b9303e13ec9197442875705b8f",
+    "purpose": "myt-reputation-selective-disclosure-v1",
+    "threshold": 25,
+    "type": "myt-reputation-disclosure-request",
+    "version": 1
+  },
+  "transport_encoding_only": true
+}

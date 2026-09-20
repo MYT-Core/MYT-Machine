@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-09-10",
+  "status": "design_blocked",
+  "product_implemented": false,
+  "baseline_sha": "ff1624ff6263bfd4142550391a381f96006a0413",
+  "branch": "feature/phase4f-zk-selective-disclosure",
+  "product_version": "0.5.0",
+  "alternatives_report_complete": true,
+  "qualified_backend_count": 0,
+  "candidate": {
+    "name": "tari_bulletproofs_plus",
+    "version": "0.5.3",
+    "selected": false,
+    "source_commit": "b72778d2a5aee5dad5a0bb85e9df1d0b8be698aa",
+    "registry_url": "https://static.crates.io/crates/tari_bulletproofs_plus/tari_bulletproofs_plus-0.5.3.crate",
+    "crate_sha256": "66582d6709d2b7c49509a3c56a63fe1e893af16e86fb757ae60eac8d15a70903",
+    "published_src_matches_release": true,
+    "audit_pdf_sha256": "e7a839ba5824881bcc57318c2f957a68f2075728693bc8db7b28dba04f58689b",
+    "advisory": "GHSA-4rf5-q25p-h3rh",
+    "advisory_fix_in_examined_source": true,
+    "audit_covers_current_security_paths": "not_established",
+    "new_exploit_demonstrated": false,
+    "trusted_setup": false
+  },
+  "external_tests": {
+    "upstream_linux": {
+      "unit": 31,
+      "integration": 4,
+      "doctest": 1,
+      "failed": 0
+    },
+    "native_probe": {
+      "linux_cases_passed": 63,
+      "windows_cases_passed": 63
+    },
+    "python_extension": {
+      "pyo3": "0.29.0",
+      "abi": "abi3-py310",
+      "linux_python": [
+        "3.10.21",
+        "3.12.3",
+        "3.13.15"
+      ],
+      "windows_python": [
+        "3.10.21",
+        "3.12.14",
+        "3.13.9"
+      ],
+      "all_six_runs_passed": true,
+      "scope": "fixture proof, verify, wrong-context rejection, serialization roundtrip; not wheel/release testing"
+    },
+    "new_myt_product_tests": 0
+  },
+  "known_vulnerability_scan": {
+    "tool": "cargo-audit",
+    "advisory_database_commit": "b50980aad8b8f14f77e25a97b32dd94bf008b0af",
+    "native_lockfile_entries": 50,
+    "python_lockfile_entries": 57,
+    "known_vulnerabilities": 0,
+    "informational_warnings": 0,
+    "ignored_advisories": [],
+    "native_lockfile_sha256": "32ae3a982c5d911d6b849c17315c233cac5c235cebab11674e913c9535871742",
+    "python_lockfile_sha256": "7f0745c01032243de92fa97a11b7d5f7d484f12db975b24aeb18f881e1d4b9ee"
+  },
+  "measurements": {
+    "cpu": "Intel Core i5-6400 2.70GHz",
+    "raw_proof_bytes": 577,
+    "range_bits": 32,
+    "aggregation_factor": 2,
+    "independent_batch_count": 1,
+    "includes_generator_setup": true,
+    "linux_microseconds": [
+      [
+        71570,
+        9893
+      ],
+      [
+        50532,
+        14877
+      ],
+      [
+        65544,
+        12357
+      ],
+      [
+        36028,
+        38958
+      ],
+      [
+        60452,
+        17550
+      ],
+      [
+        61321,
+        14401
+      ],
+      [
+        61360,
+        8727
+      ],
+      [
+        38150,
+        13475
+      ],
+      [
+        33877,
+        13489
+      ],
+      [
+        21790,
+        12023
+      ]
+    ],
+    "windows_microseconds": [
+      [
+        17650,
+        5824
+      ],
+      [
+        18746,
+        6143
+      ],
+      [
+        17276,
+        5803
+      ],
+      [
+        18251,
+        4574
+      ],
+      [
+        17783,
+        5870
+      ],
+      [
+        17000,
+        5534
+      ],
+      [
+        17855,
+        4899
+      ],
+      [
+        17934,
+        5819
+      ],
+      [
+        16989,
+        6007
+      ],
+      [
+        18615,
+        5122
+      ]
+    ],
+    "note": "Different host load and warmup; not a direct OS comparison or universal benchmark."
+  },
+  "historical_baseline": {
+    "tests_total": 424,
+    "phase4a": 66,
+    "phase4b": 62,
+    "phase4c": 47,
+    "phase4d": 143,
+    "phase4e": 106,
+    "ci_run": 34389682287,
+    "ci_jobs_passed": 14,
+    "rerun_this_continuation": false
+  },
+  "alternative_candidates": [
+    {
+      "name": "bulletproofs",
+      "version": "5.0.0",
+      "repository": "zkcrypto/bulletproofs",
+      "source_commit": "86eadbeeb4a96d8da41427137b45ead810d03b41",
+      "crate_sha256": "012e2e5f88332083bd4235d445ae78081c00b2558443821a9ca5adfe1070073d",
+      "audited_source_commit": "6a17ceb3bf3ce9b94cfa16a2a1a7311eef2dc6e7",
+      "resolved_curve_version": "4.1.3",
+      "lockfile_entries": 47,
+      "lockfile_sha256": "879ea36871e5db473b789b39f98e06a6104df442cefa32946315f96b54ef2f75",
+      "known_rustsec_findings": 0,
+      "selected": false,
+      "blocker": "Current path audit mapping and active security-maintenance assurance incomplete"
+    },
+    {
+      "name": "secp256k1-zkp-rangeproof",
+      "source_commit": "037cc6d74cbb4a89e443117459b577d56a582e54",
+      "linux_api_checks_passed": 31,
+      "native_windows_api_checks_passed": 31,
+      "python_matrix_run": false,
+      "raw_two_proof_bytes": 5136,
+      "timing_iterations_per_os": 10,
+      "linux_median_clock_ms": {"prove": 9.724, "verify": 6.636},
+      "windows_median_clock_ms": {"prove": 10.0, "verify": 8.0},
+      "timing_note": "C clock() semantics/resolution differ by runtime; not comparable with Tari timings",
+      "test_fixture_source_sha256": "3e7ab0b2a6a40bb89a0a952c33412a7b5c7832e20a779a25f3956645f8bb533d",
+      "rust_wrapper_review": {
+        "version": "0.11.0",
+        "crate_sha256": "52a44aed3002b5ae975f8624c5df3a949cfbf00479e18778b6058fcd213b76e3",
+        "sys_version": "0.10.1",
+        "sys_crate_sha256": "57f08b2d0b143a22e07f798ae4f0ab20d5590d7c68e0d090f2088a48a21d1654",
+        "vendored_c_reference": "6152622613fdf1c5af6f31f74c427c4e9ee120ce",
+        "same_source_as_native_probe": false,
+        "lockfile_entries": 9,
+        "lockfile_sha256": "7e32d13ae17ec18294b126bf2b142ab5db87c352c5fb4d8649cc66e2fd402dda",
+        "known_rustsec_findings": 0
+      },
+      "selected": false,
+      "blocker": "Current rangeproof path review and matching binding provenance not qualified"
+    },
+    {
+      "name": "gnark",
+      "version": "0.16.3",
+      "source_commit": "cfc7b2f907cc4212ec152077e022c6d0b4805759",
+      "gnark_crypto_version": "0.21.0",
+      "advisory": "GHSA-3mvx-pp85-pm65",
+      "cited_advisory_affects_candidate": false,
+      "selected": false,
+      "blocker": "Current gadget/application circuit assurance and setup lifecycle incomplete"
+    },
+    {
+      "name": "halo2_proofs",
+      "version": "0.3.5",
+      "repository": "zcash/halo2",
+      "source_commit": "8e22adbdce480e5db7625df56aff9c2c8ca79f8f",
+      "crate_sha256": "f5aca1c66059a919227dec97444a11a4350d2f9c820ca48690988f0aa0e81cbf",
+      "variant": "IPA/Pasta, not KZG forks",
+      "independent_2026_review_exists": true,
+      "lockfile_entries": 42,
+      "lockfile_sha256": "903a16e743b1283ec3a978cc7b37c1350d73ba155b150ce03090c9578c5623b7",
+      "known_rustsec_findings": 0,
+      "selected": false,
+      "blocker": "Detailed recent review remediation mapping and concrete MYT circuit not qualified"
+    },
+    {
+      "name": "risc0-zkvm",
+      "version": "3.0.6",
+      "evidence_scope": "Official registry metadata, release/advisory data and platform/setup documentation; no local prover installed",
+      "zero_knowledge_warning": "GHSA-5xgj-pmjj-gw49",
+      "selected": false,
+      "blocker": "Privacy-assurance warning not closed for the proposed mode and native Windows local prover not qualified"
+    }
+  ],
+  "credential_architecture_review": {
+    "review_date": "2026-09-10",
+    "report": "phase4f-credential-architecture-review.md",
+    "status": "promising_external_crypto_review_required",
+    "previous_range_proof_decision_changed": false,
+    "recommended_architecture_for_review": "B",
+    "recommended_production_implementation": null,
+    "qualified_credential_backends": 0,
+    "implementation_authorized": false,
+    "model": "ZK selective disclosure of evaluator-signed bounded predicate claims, not an arithmetic range proof",
+    "numeric_inequality_proven_by_b": false,
+    "evaluator_trust_required": true,
+    "subject_machine_id_public": true,
+    "holder_binding": "Proposed reuse of Phase 4B signature over complete request and presentation; not implemented",
+    "new_product_code": false,
+    "new_product_tests": 0,
+    "linux_python": ["3.10.21", "3.12.3", "3.13.15"],
+    "windows_python": ["3.10.21", "3.12.14", "3.13.9"],
+    "candidates": [
+      {
+        "name": "@digitalbazaar/bbs-signatures",
+        "version": "3.1.0",
+        "release_commit": "584a8dbed4988611b3a6fae1416190338b536d30",
+        "noble_curves": "2.4.0",
+        "noble_hashes": "2.4.0",
+        "node": "24.14.0",
+        "npm_integrity": "sha512-wx86l/PFOaRcoLBPmzwpF9Oo4uYJrm4uq/B1rHX5OHD15NakmUINfRr8NAGDG356GeTBDGZkMsBFgNj1x0dc+g==",
+        "linux_lock_sha256": "5ddd00229aa9440c66698c7e404b394618f347826a9644beb96036a4fd2efb70",
+        "bridge": "Python to local Node subprocess; not a product binding",
+        "checks_passed_per_environment": 22,
+        "environments": 6,
+        "proof_bytes": 336,
+        "signature_bytes": 80,
+        "public_key_bytes": 96,
+        "messages": 13,
+        "hidden_messages": 2,
+        "known_npm_advisories": 0,
+        "current_coverage": "MATERIAL AUDIT GAP",
+        "bbs_specific_implementation_audit": "UNKNOWN",
+        "draft10_interoperability_established": false,
+        "selected": false
+      },
+      {
+        "name": "zkryptium",
+        "version": "0.7.0",
+        "features": ["bbsplus"],
+        "default_features": false,
+        "source_commit": "2959148b748f569f9c119bbbc3129524bf07a326",
+        "github_release_label": "v0.7.0-alpha",
+        "github_release_prerelease": true,
+        "bls12_381_plus": "0.8.18",
+        "crate_sha256": "00d24b3f82a8410c6b321e1e62e9858d9e0f3d5b7ba7e07b8356965c67dba816",
+        "lock_sha256": "cfc8423485c19852aea30d7624c67f847bd555af0f80de6d62db351411b44d03",
+        "lock_entries": 52,
+        "known_rustsec_findings": 0,
+        "rustsec_warnings": 0,
+        "bridge": "Python to local native Rust executable; not a product binding or wheel",
+        "checks_passed_per_environment": 25,
+        "checks_note": "Five API checks repeated five times",
+        "environments": 6,
+        "proof_bytes": 336,
+        "current_coverage": "UNKNOWN",
+        "selected": false
+      },
+      {
+        "name": "anoncreds",
+        "version": "0.2.3",
+        "native_library_version_verified": "0.2.3",
+        "release_commit": "f445039e312f38e848f4c6b990c37d56511b380a",
+        "clsignatures_declared": "0.3.2",
+        "linux_wheel_sha256": "5fe3172d37a88640a0af65e16a1f6da74f9dbac9d962e77b288dcacbb1c10cfc",
+        "windows_wheel_sha256": "cd9c747eeff5dc3d975f99671f6e79b1d287c5fb625abf4dafadeaa69bdfc739",
+        "linux_native_sha256": "2bac97956e80a33bead082c2001893384142c215fe0b612f84dbb19bdc888806",
+        "windows_native_sha256": "943b9d8c18ff95c4b6d52de412edfce564f4822845b151d9a4f9c8fd0a704a54",
+        "windows_embedded_openssl_string": "OpenSSL 3.5.4 30 Sep 2025",
+        "linux_embedded_openssl_version": null,
+        "pip_check_all_six": true,
+        "pip_audit_package_level_findings": 0,
+        "pip_audit_covers_embedded_native_graph": false,
+        "known_link_secret_advisory": "GHSA-89r4-4c4j-7wx9",
+        "link_secret_fix_present_in_release_source": true,
+        "upstream_mixed_secret_regressions_rerun": false,
+        "direct_adapter_requirements_per_environment": 23,
+        "requirements_passed_per_environment": 12,
+        "environments": 6,
+        "requested_predicate_substitutions_accepted_per_environment": 3,
+        "raw_mutations_accepted_per_environment": 8,
+        "raw_encoding_validation_documented_caller_responsibility": true,
+        "predicate_failure_is_not_claimed_cl_forgery": true,
+        "bare_api_is_not_complete_verifier_contract": true,
+        "established_framework_prechecks": {
+          "name": "ACA-Py pre_verify",
+          "source_commit": "c148063f307ba33a41402ed1b73e241c07dd55c4",
+          "source_path": "acapy_agent/anoncreds/verifier.py",
+          "source_sha256": "81699541a13226e438843905986003a822fa0a95c1726c4a52f0e8a28dd762a5",
+          "source_checks_predicate_bound_and_raw_encoding": true,
+          "full_framework_installed_or_qualified": false,
+          "note": "Established application checks explain why direct API failures must not be generalized to all AnonCreds applications"
+        },
+        "upstream_report_submitted": false,
+        "current_coverage": "MATERIAL AUDIT GAP",
+        "selected": false
+      }
+    ],
+    "screened_without_platform_matrix": [
+      {"name": "pairing_crypto", "manifest_version": "0.4.4", "commit": "0437217da793eddc9bf6927faae3a1f33b994a30", "reason": "Explicitly unaudited implementation, draft03, forked primitive"},
+      {"name": "docknetwork/crypto", "bbs_plus_manifest_version": "0.25.0", "commit": "224f195bb8babc2d0de5256135120e0aca9fbd19", "reason": "Exact current BBS-only audit and deployable graph not established"}
+    ],
+    "evidence_sha256": {
+      "anoncreds_formal_paper": "1182598baa0715f0bae3d5cd2bcc47c44b8d7589d620645d0cda809e2e47fab2",
+      "noble_cure53_audit": "be2f348140729f6d58071ee08fca76f1d13c430e316270455abee73ebd009b50",
+      "anon_probe": "ffbf24f09118cea9b286254854be7aed134bd774aefc7bfe65394dc0545e010a",
+      "bbs_js_probe": "bfd9453ab7dd00ce7dd7babe6c5df213e2897a3d0df2dd53a0afc2d4157c3f99",
+      "zkryptium_probe": "bf965c915dbedefa083b1be1efe8cfaf13a74610787b1d819396d3d225162a18"
+    },
+    "product_release_gates_run": false,
+    "source_review_is_not_independent_crypto_audit": true
+  },
+  "product_release_gates_passed": false,
+  "new_commit": false,
+  "pushed": false,
+  "merged": false,
+  "tagged": false,
+  "released": false,
+  "pypi_published": false,
+  "deployed": false
+}

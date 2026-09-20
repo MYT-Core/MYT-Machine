@@ -1,5 +1,15 @@
 # MYT Machine Settlement, Identity, Address Binding, and Billing SDK/CLI
 
+> This feature branch contains the UNRELEASED Phase 4F engineering candidate.
+> It is NOT the released v0.5.1 artifact, although the Python runtime version
+> remains 0.5.1 to preserve all frozen regression and RPC User-Agent expectations.
+> No deployment or release approval. External cryptographic qualification: NO.
+> Phase 4F requires the explicitly optional Node companion; existing 4A-4E do not.
+> See [candidate protocol](docs/phase4f-protocol-v1.md),
+> [runtime boundary](docs/phase4f-runtime-architecture.md), and
+> [external review scope](docs/phase4f-official-candidate-review-scope.md).
+
+
 [![CI](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml/badge.svg)](https://github.com/MYT-Core/MYT-Machine/actions/workflows/ci.yml)
 
 `myt-machine` provides the Phase 4 machine-facing interfaces for MYT:

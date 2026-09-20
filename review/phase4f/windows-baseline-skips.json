@@ -1,0 +1,11 @@
+{
+  "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink": "Symlinks are not available",
+  "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected": "Unix FIFO and symlink",
+  "test_cli_reputation.ReputationCliTests.test_file_mode": "Unix modes",
+  "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files": "Symlinks are not available",
+  "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600": "Unix permission checks do not apply on Windows",
+  "test_invoice_store.InvoiceStoreTests.test_private_database_permissions": "Unix permissions",
+  "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected": "Unix symlink setup",
+  "test_reputation_store.ReputationStoreTests.test_permissions": "Unix mode enforcement",
+  "test_reputation_store.ReputationStoreTests.test_symlink_hardlink": "Unix links"
+}

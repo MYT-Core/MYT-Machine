@@ -13,4 +13,13 @@ include docs/reputation-policy.md
 include docs/reputation-attestation-v1.md
 include docs/reputation-attestation-v1-test-vector.json
 include MYT_Phase4E_Validation.md
-recursive-include tests *.py
+include docs/phase4f-protocol-v1.md
+include docs/phase4f-runtime-architecture.md
+include docs/phase4f-header-vector.json
+prune tests
+prune review
+prune companions
+global-exclude *.pyc
+global-exclude *.db
+global-exclude *.sqlite*
+global-exclude *.pem

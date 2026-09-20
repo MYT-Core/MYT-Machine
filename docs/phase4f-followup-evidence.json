@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-09-11",
+  "scope": "isolated-three-finding-follow-up-not-official-product",
+  "baseline": "73beb99102f56671d6b2d85c9368bfa788249dc2",
+  "official_branch": "feature/phase4f-zk-selective-disclosure",
+  "external": {
+    "contributor": "fallacyofall",
+    "prototype": "b8b8e68a200fdd406dcd790f0235a44505430154",
+    "candidate": "85bd11ca26f6412cd7d3e59b582962bedbc98b3c",
+    "sources_and_original_tests_unchanged": true
+  },
+  "findings": [
+    {
+      "id": "F4F-01",
+      "classification": "application-authentication-binding",
+      "status": "fixed-in-isolated-remediation",
+      "upstream_commit_fixed": false
+    },
+    {
+      "id": "F4F-02",
+      "classification": "lifecycle-time-validation",
+      "status": "fixed-in-isolated-remediation",
+      "upstream_commit_fixed": false
+    },
+    {
+      "id": "F4F-03",
+      "classification": "parser-canonicalization",
+      "status": "fixed-in-isolated-remediation",
+      "upstream_commit_fixed": false
+    }
+  ],
+  "tests": {
+    "original_suites_target": "unmodified-archived-implementations-not-remediation",
+    "original_each_platform": {
+      "prototype_node": {
+        "passed": 24,
+        "total": 24
+      },
+      "candidate_python": {
+        "passed": 7,
+        "total": 7
+      },
+      "candidate_node": {
+        "passed": 35,
+        "total": 35
+      }
+    },
+    "remediation_each_platform": {
+      "node": {
+        "passed": 76,
+        "total": 76
+      },
+      "python_sqlite": {
+        "passed": 35,
+        "total": 35
+      },
+      "skipped": 0
+    },
+    "new_unique_test_count": 111,
+    "platforms": [
+      "Linux",
+      "native Windows"
+    ],
+    "node_version": "24.14.0",
+    "full_suite_python": {
+      "linux": "3.12.3",
+      "windows": "3.12.14"
+    },
+    "sqlite_competing_processes": 16,
+    "sqlite_successful_consumptions": 1,
+    "official_phase4b_interop": {
+      "official_version": "0.5.1",
+      "checks_per_environment": 5,
+      "linux_python": [
+        "3.10.21",
+        "3.12.3",
+        "3.13.15"
+      ],
+      "windows_python": [
+        "3.10.21",
+        "3.12.14",
+        "3.13.9"
+      ],
+      "cryptography": "50.0.0",
+      "all_passed": true,
+      "counts_not_included_in_111": true
+    },
+    "first_attempt_harness_issue": "New Python test left two sqlite inspection connections open on Windows. Test-only context managers corrected; final full rerun passed.",
+    "full_487_regression_rerun": false,
+    "official_candidate_matrix_run": false
+  },
+  "invariants": {
+    "expected_subject_is_mandatory_and_independent": true,
+    "legacy_request_fallback": false,
+    "temporal_rule": "not_before <= verifier_now < expires_at",
+    "clock_tolerance_seconds": 0,
+    "request_lifetime_seconds": [
+      1,
+      300
+    ],
+    "timestamp_bounds": [
+      0,
+      253402300799
+    ],
+    "key_file_encoding": "strict UTF-8; canonical JSON plus exactly one LF; exact raw-byte equality"
+  },
+  "dependency_graph": {
+    "digitalbazaar_bbs": "3.1.0",
+    "noble_curves": "2.4.0",
+    "noble_hashes": "2.4.0",
+    "node_modules_modified": false,
+    "lock_sha256": "23dd686c84d238e60d9c939310d084b642e743af3b8b9139a7174c4029fd400b"
+  },
+  "sources_sha256": {
+    "src/phase4f.mjs": "b4d4b09d4a09dfc3ff98dcc10b9ba2d2f02e4361273d824ae3c40d7aeb4d2a35",
+    "src/python-bridge.mjs": "05309bb98eecc8c393fa1eb4181f3b44e66e672be59564f54f2061648af02711",
+    "src/secure-key-store.mjs": "159adb3c94bb02fb3cee31f85cb2c8c73b6ec126b2b2e33744230e9345e2a9bd",
+    "bridge/challenge_store.py": "1749e2326e4f38273dc86a2369820489e07d00d3b0fc7560d9ab4ea1b1feea36",
+    "followup.test.mjs": "6530c4c4659334c0cb259a7a847089457b22679cd4a26893d40682abdc86e457",
+    "followup_sqlite_test.py": "12b4ae4ef034aa7f8f421a09fa3eab2998c2529b092263b07dc578df84f6bd10",
+    "interop-generator.mjs": "bb8ca076994f017d884cf30f197dad1c9f5363cbf4b0f63c6544ef3e78640566",
+    "interop_verify.py": "1cc2b5fb50ff0c621b60a01f83281b6384bfabce5c9bc6d32c1035fb43230656"
+  },
+  "evidence_sha256": {
+    "remediation.patch": "02ba3e6bba071458a28e6e9d5be2f586c3333008b326caff83925c2fb2df825c",
+    "public-interop-vector.json": "1ffe3cee62e854995d4ba383bceac6e879810ae00a0746274b0bac1b44479453",
+    "linux-node-final.log": "6f3dd8762e19422daf5b53803cda2cb8f10b732a71cc5c04d14125f4db225673",
+    "linux-python-final.log": "a9a6c3a2a00c974d17931e67748e56fa44a94c1d83e1650d6b89b9128c21a1c2",
+    "windows-node-final.log": "6b258ee35bf4908d4661ad5865790376f5a9d3fa475c13e1188ce774de7dd37c",
+    "windows-python-final.log": "8917c5202818b6716a59195a0c456bc297934a4a1111d71f6f14695c69a7e331"
+  },
+  "public_request_header_sha256": "f33bb331a999e6aec45aaffb288c1e177fc3f4eae2843ad1dc78f8632dcac7f1",
+  "preservation": {
+    "historical_research_files": 6,
+    "all_hashes_equal": true,
+    "main_unchanged": true,
+    "tracked_product_diff_empty": true
+  },
+  "security": {
+    "known_passphrase_sentinels_and_pem_headers_absent_in_final_outputs": true,
+    "real_secrets_used": false,
+    "custom_crypto_required": false,
+    "crypto_backend_independently_qualified": false,
+    "external_crypto_review_required": true,
+    "numeric_inequality_proven_in_zk": false,
+    "architecture": "still-viable-for-trusted-evaluator-selective-disclosure"
+  },
+  "outcome": {
+    "official_product_candidate_created": false,
+    "official_preparation": "Mandatory integration contract and follow-up evidence prepared; no product runtime boundary silently selected.",
+    "commit": false,
+    "push": false,
+    "merge_to_main": false,
+    "tag": false,
+    "release": false,
+    "pypi": false,
+    "deployment": false
+  },
+  "remaining_gates": [
+    "Official real-Phase4E issuance and no synthetic evaluation injection",
+    "Production artifact and key-file parsing/storage hardening",
+    "Mandatory evaluator/issuer-key status and freshness policy",
+    "Defensible optional local JS/Python integration boundary",
+    "Full official candidate 487+ regression/runtime/security/packaging/hostile review",
+    "Independent cryptographic qualification"
+  ]
+}

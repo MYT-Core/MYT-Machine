@@ -1,0 +1,21 @@
+{
+  "name": "@myt-core/bbs-companion",
+  "version": "0.6.0-dev.0",
+  "private": true,
+  "type": "module",
+  "description": "Optional local BBS service for the unreleased MYT Phase 4F candidate",
+  "license": "BSD-3-Clause",
+  "engines": {"node": ">=24.20.0 <25"},
+  "bin": {"myt-bbs-companion": "src/cli.mjs"},
+  "files": ["src", "README.md", "LICENSE", "npm-shrinkwrap.json"],
+  "scripts": {"test": "node --test test/*.test.mjs"},
+  "dependencies": {
+    "@digitalbazaar/bbs-signatures": "3.1.0",
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0"
+  },
+  "overrides": {
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0"
+  }
+}

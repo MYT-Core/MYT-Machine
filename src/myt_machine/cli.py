@@ -18,6 +18,7 @@ from .binding_artifacts import (
     load_address_binding,
     save_address_binding,
 )
+from .disclosure_cli import add_disclosure_parsers, run_disclosure_command
 from .errors import ConfigurationError, InputError, MytMachineError, WalletRpcError
 from .identity import (
     MAX_IDENTITY_MESSAGE_BYTES,
@@ -247,6 +248,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_billing_parsers(subparsers)
     add_reputation_parsers(subparsers)
+    add_disclosure_parsers(subparsers)
     return parser
 
 
@@ -598,7 +600,14 @@ def main(
 
     try:
         args = build_parser().parse_args(arguments)
-        if args.command == "reputation":
+        if args.command == "disclosure":
+            command = f"disclosure-{args.disclosure_command}"
+            result, positive = run_disclosure_command(
+                args, lambda key_args: _identity_passphrase(
+                    key_args, input_stream, passphrase_reader, confirm=False
+                )
+            )
+        elif args.command == "reputation":
             command = f"reputation-{args.reputation_command}"
             result, positive = run_reputation_command(
                 args, input_stream, lambda: client_factory(_build_config(args, environment)),

@@ -14,3 +14,6 @@ htmlcov/
 *.rpc-password
 *.password
 .e2e/
+node_modules/
+.npm/
+*.tgz

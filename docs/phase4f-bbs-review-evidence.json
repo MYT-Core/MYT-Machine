@@ -1,0 +1,1196 @@
+{
+    "date":  "2026-09-20",
+    "baseline":  "73beb99102f56671d6b2d85c9368bfa788249dc2",
+    "feature_branch":  "feature/phase4f-bbs-selective-disclosure",
+    "python_version":  "0.5.1",
+    "crypto_backend_externally_qualified":  false,
+    "external_crypto_review_required":  true,
+    "no_main_merge":  true,
+    "old_linux":  {
+                      "skip":  0,
+                      "pass":  487
+                  },
+    "old_windows":  {
+                        "skip":  9,
+                        "pass":  478
+                    },
+    "new_python_tests":  66,
+    "native_node_tests":  67,
+    "independent_attacks":  33,
+    "final_additional_adversarial_tests":  9,
+    "windows_administrator":  false,
+    "platform_skips_document":  "phase4f-windows-platform-gates.md",
+    "dependency_integrity":  {
+                                 "dependencies":  [
+                                                      {
+                                                          "package":  "@digitalbazaar/bbs-signatures",
+                                                          "version":  "3.1.0",
+                                                          "registry_integrity":  "sha512-wx86l/PFOaRcoLBPmzwpF9Oo4uYJrm4uq/B1rHX5OHD15NakmUINfRr8NAGDG356GeTBDGZkMsBFgNj1x0dc+g==",
+                                                          "source_commit":  "1b03d2528922ea6ee6f290a198136421f282fed8",
+                                                          "license":  "BSD-3-Clause",
+                                                          "install_hooks":  false,
+                                                          "native_binaries":  false,
+                                                          "exact_composition_independently_audited":  false
+                                                      },
+                                                      {
+                                                          "package":  "@noble/curves",
+                                                          "version":  "2.4.0",
+                                                          "registry_integrity":  "sha512-P4/62zrgfH33CneE3Dn4WhJVA22YUU0eR51wKIan4NVRvwsA0YnPTwWGpNbpuacSujmSFLvyzpyuR30+fbq2Ew==",
+                                                          "source_commit":  "656c4364dffa44c64aa0c49914b8000b278b67a9",
+                                                          "license":  "MIT",
+                                                          "install_hooks":  false,
+                                                          "native_binaries":  false,
+                                                          "exact_composition_independently_audited":  false
+                                                      },
+                                                      {
+                                                          "package":  "@noble/hashes",
+                                                          "version":  "2.4.0",
+                                                          "registry_integrity":  "sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA==",
+                                                          "source_commit":  "663c2aeeffc308ac0cded59bd32f7c212adacfc2",
+                                                          "license":  "MIT",
+                                                          "install_hooks":  false,
+                                                          "native_binaries":  false,
+                                                          "exact_composition_independently_audited":  false
+                                                      }
+                                                  ],
+                                 "crypto_backend_externally_qualified":  false,
+                                 "external_crypto_review_required":  true
+                             },
+    "packaging":  {
+                      "companion":  {
+                                        "files":  11
+                                    },
+                      "sdist":  {
+                                    "files":  64
+                                },
+                      "sha256":  {
+                                     "myt-core-bbs-companion-0.6.0-dev.0.tgz":  "78ef777c6e4ff2fd469c8caaca3913f43cddd136952ce0cfb6cc9a9826cf105b",
+                                     "myt_machine_settlement-0.5.1-py3-none-any.whl":  "95023dde6b576fddff9f13b97dd187d72fb03ed85943a79bd5cf2b98d9b0b488",
+                                     "myt_machine_settlement-0.5.1.tar.gz":  "1fb8ecd59c7e3dc3b52ab03006d66922866a59ceabd0cac6385868cf029afb9a"
+                                 },
+                      "wheel":  {
+                                    "files":  40,
+                                    "runtime":  [
+                                                    "cryptography\u003e=50.0.0"
+                                                ]
+                                }
+                  },
+    "clean_wheel_linux":  {
+                              "cli_json_documents":  13,
+                              "crypto_external_qualification":  false,
+                              "durable_replay":  true,
+                              "identity_to_real_phase4e_store_to_credential_to_disclosure":  true,
+                              "installed_wheel":  true,
+                              "keyless_verifier":  true,
+                              "negative_audience":  true,
+                              "no_wallet_daemon_blockchain":  true,
+                              "proof_bytes":  400,
+                              "public_vector_native_verification":  true,
+                              "secret_redaction":  true,
+                              "separate_packed_companion":  true,
+                              "synthetic_observations":  true,
+                              "version":  "0.5.1"
+                          },
+    "clean_wheel_windows":  {
+                                "cli_json_documents":  13,
+                                "crypto_external_qualification":  false,
+                                "durable_replay":  true,
+                                "identity_to_real_phase4e_store_to_credential_to_disclosure":  true,
+                                "installed_wheel":  true,
+                                "keyless_verifier":  true,
+                                "negative_audience":  true,
+                                "no_wallet_daemon_blockchain":  true,
+                                "proof_bytes":  400,
+                                "public_vector_native_verification":  true,
+                                "secret_redaction":  true,
+                                "separate_packed_companion":  true,
+                                "synthetic_observations":  true,
+                                "version":  "0.5.1"
+                            },
+    "linux_matrix":  {
+                         "value":  [
+                                       {
+                                           "gate":  "linux-node-floor",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-node-current",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-floor-versions",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-floor-pip-check",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-floor-full",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "553"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-floor-attacks",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-floor-compile",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-latest-versions",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-latest-pip-check",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-latest-full",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "553"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-latest-attacks",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.10-latest-compile",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-floor-versions",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-floor-pip-check",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-floor-full",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "553"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-floor-attacks",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-floor-compile",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-latest-versions",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-latest-pip-check",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-latest-full",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "553"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-latest-attacks",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.12-latest-compile",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-floor-versions",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-floor-pip-check",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-floor-full",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "553"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-floor-attacks",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-floor-compile",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-latest-versions",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-latest-pip-check",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-latest-full",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "553"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-latest-attacks",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-3.13-latest-compile",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-node-floor-python-integration",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "66"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       },
+                                       {
+                                           "gate":  "linux-node-floor-independent",
+                                           "exit_code":  0,
+                                           "passed":  true,
+                                           "platform_skips":  {
+
+                                                              },
+                                           "resource_warnings":  false,
+                                           "test_counts":  [
+                                                               "33"
+                                                           ],
+                                           "skipped":  [
+
+                                                       ]
+                                       }
+                                   ],
+                         "Count":  34
+                     },
+    "windows_matrix":  {
+                           "value":  [
+                                         {
+                                             "gate":  "windows-node-floor",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-node-current",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-floor-versions",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-floor-pip-check",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-floor-full",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+                                                                    "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink":  "Symlinks are not available",
+                                                                    "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected":  "Unix FIFO and symlink",
+                                                                    "test_cli_reputation.ReputationCliTests.test_file_mode":  "Unix modes",
+                                                                    "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files":  "Symlinks are not available",
+                                                                    "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600":  "Unix permission checks do not apply on Windows",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_private_database_permissions":  "Unix permissions",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected":  "Unix symlink setup",
+                                                                    "test_reputation_store.ReputationStoreTests.test_permissions":  "Unix mode enforcement",
+                                                                    "test_reputation_store.ReputationStoreTests.test_symlink_hardlink":  "Unix links"
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "553"
+                                                             ],
+                                             "skipped":  [
+                                                             "9"
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-floor-attacks",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-floor-compile",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-latest-versions",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-latest-pip-check",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-latest-full",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+                                                                    "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink":  "Symlinks are not available",
+                                                                    "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected":  "Unix FIFO and symlink",
+                                                                    "test_cli_reputation.ReputationCliTests.test_file_mode":  "Unix modes",
+                                                                    "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files":  "Symlinks are not available",
+                                                                    "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600":  "Unix permission checks do not apply on Windows",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_private_database_permissions":  "Unix permissions",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected":  "Unix symlink setup",
+                                                                    "test_reputation_store.ReputationStoreTests.test_permissions":  "Unix mode enforcement",
+                                                                    "test_reputation_store.ReputationStoreTests.test_symlink_hardlink":  "Unix links"
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "553"
+                                                             ],
+                                             "skipped":  [
+                                                             "9"
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-latest-attacks",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.10-latest-compile",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-floor-versions",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-floor-pip-check",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-floor-full",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+                                                                    "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink":  "Symlinks are not available",
+                                                                    "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected":  "Unix FIFO and symlink",
+                                                                    "test_cli_reputation.ReputationCliTests.test_file_mode":  "Unix modes",
+                                                                    "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files":  "Symlinks are not available",
+                                                                    "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600":  "Unix permission checks do not apply on Windows",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_private_database_permissions":  "Unix permissions",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected":  "Unix symlink setup",
+                                                                    "test_reputation_store.ReputationStoreTests.test_permissions":  "Unix mode enforcement",
+                                                                    "test_reputation_store.ReputationStoreTests.test_symlink_hardlink":  "Unix links"
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "553"
+                                                             ],
+                                             "skipped":  [
+                                                             "9"
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-floor-attacks",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-floor-compile",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-latest-versions",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-latest-pip-check",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-latest-full",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+                                                                    "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink":  "Symlinks are not available",
+                                                                    "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected":  "Unix FIFO and symlink",
+                                                                    "test_cli_reputation.ReputationCliTests.test_file_mode":  "Unix modes",
+                                                                    "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files":  "Symlinks are not available",
+                                                                    "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600":  "Unix permission checks do not apply on Windows",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_private_database_permissions":  "Unix permissions",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected":  "Unix symlink setup",
+                                                                    "test_reputation_store.ReputationStoreTests.test_permissions":  "Unix mode enforcement",
+                                                                    "test_reputation_store.ReputationStoreTests.test_symlink_hardlink":  "Unix links"
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "553"
+                                                             ],
+                                             "skipped":  [
+                                                             "9"
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-latest-attacks",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.12-latest-compile",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-floor-versions",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-floor-pip-check",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-floor-full",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+                                                                    "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink":  "Symlinks are not available",
+                                                                    "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected":  "Unix FIFO and symlink",
+                                                                    "test_cli_reputation.ReputationCliTests.test_file_mode":  "Unix modes",
+                                                                    "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files":  "Symlinks are not available",
+                                                                    "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600":  "Unix permission checks do not apply on Windows",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_private_database_permissions":  "Unix permissions",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected":  "Unix symlink setup",
+                                                                    "test_reputation_store.ReputationStoreTests.test_permissions":  "Unix mode enforcement",
+                                                                    "test_reputation_store.ReputationStoreTests.test_symlink_hardlink":  "Unix links"
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "553"
+                                                             ],
+                                             "skipped":  [
+                                                             "9"
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-floor-attacks",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-floor-compile",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-latest-versions",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-latest-pip-check",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-latest-full",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+                                                                    "test_binding_artifacts.BindingArtifactTests.test_load_rejects_missing_directory_and_symlink":  "Symlinks are not available",
+                                                                    "test_cli_reputation.ReputationCliTests.test_fifo_symlink_rejected":  "Unix FIFO and symlink",
+                                                                    "test_cli_reputation.ReputationCliTests.test_file_mode":  "Unix modes",
+                                                                    "test_identity_artifacts.IdentityArtifactTests.test_load_rejects_missing_nonregular_and_symlink_files":  "Symlinks are not available",
+                                                                    "test_identity_keys.IdentityKeyTests.test_private_key_must_be_regular_nonsymlink_and_mode_0600":  "Unix permission checks do not apply on Windows",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_private_database_permissions":  "Unix permissions",
+                                                                    "test_invoice_store.InvoiceStoreTests.test_symlink_database_rejected":  "Unix symlink setup",
+                                                                    "test_reputation_store.ReputationStoreTests.test_permissions":  "Unix mode enforcement",
+                                                                    "test_reputation_store.ReputationStoreTests.test_symlink_hardlink":  "Unix links"
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "553"
+                                                             ],
+                                             "skipped":  [
+                                                             "9"
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-latest-attacks",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-3.13-latest-compile",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-node-floor-python-integration",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "66"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         },
+                                         {
+                                             "gate":  "windows-node-floor-independent",
+                                             "exit_code":  0,
+                                             "passed":  true,
+                                             "platform_skips":  {
+
+                                                                },
+                                             "resource_warnings":  false,
+                                             "test_counts":  [
+                                                                 "33"
+                                                             ],
+                                             "skipped":  [
+
+                                                         ]
+                                         }
+                                     ],
+                           "Count":  34
+                       },
+    "hosted_ci":  "Mandatory after feature push; see exact commit/run in final handoff",
+    "scan_results":  {
+                         "pip_audit_floor":  "no known vulnerabilities",
+                         "bandit":  "PASS",
+                         "npm_audit":  "0 vulnerabilities",
+                         "pip_audit_latest":  "no known vulnerabilities",
+                         "ruff":  "PASS"
+                     }
+}
