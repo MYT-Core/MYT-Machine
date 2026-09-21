@@ -1,6 +1,7 @@
 # Phase 4F runtime decision
 
-Candidate only. No cryptographic qualification or release approval.
+Public review candidate v0.6.0-rc1, not production approval.
+External cryptographic review: PENDING. Backend externally qualified: NO.
 Baseline: 73beb99102f56671d6b2d85c9368bfa788249dc2.
 
 ## Decision before implementation

@@ -1,9 +1,9 @@
 {
   "name": "@myt-core/bbs-companion",
-  "version": "0.6.0-dev.0",
+  "version": "0.6.0-rc1",
   "private": true,
   "type": "module",
-  "description": "Optional local BBS service for the unreleased MYT Phase 4F candidate",
+  "description": "Optional local BBS service for the MYT Phase 4F public review candidate",
   "license": "BSD-3-Clause",
   "engines": {"node": ">=24.20.0 <25"},
   "bin": {"myt-bbs-companion": "src/cli.mjs"},

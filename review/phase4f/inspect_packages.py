@@ -9,8 +9,8 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 directory = Path(sys.argv[1])
-wheel = directory / "myt_machine_settlement-0.5.1-py3-none-any.whl"
-sdist = directory / "myt_machine_settlement-0.5.1.tar.gz"
+wheel = directory / "myt_machine_settlement-0.6.0rc1-py3-none-any.whl"
+sdist = directory / "myt_machine_settlement-0.6.0rc1.tar.gz"
 companions = list(directory.glob("myt-core-bbs-companion-*.tgz"))
 assert len(companions) == 1
 report = {}
@@ -39,7 +39,7 @@ with zipfile.ZipFile(wheel) as archive:
     assert len(names) == 1
     metadata = email.message_from_bytes(archive.read(names[0]))
     assert metadata["Name"] == "myt-machine-settlement"
-    assert metadata["Version"] == "0.5.1"
+    assert metadata["Version"] == "0.6.0rc1"
     assert metadata.get_all("Requires-Dist") == ["cryptography>=50.0.0"]
     assert "myt_machine/disclosure.py" in files
     report["wheel"] = {"files": len(files), "runtime": metadata.get_all("Requires-Dist")}

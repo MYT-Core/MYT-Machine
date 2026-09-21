@@ -1,11 +1,16 @@
 # Official Phase 4F candidate review scope
 
-Baseline: 73beb99102f56671d6b2d85c9368bfa788249dc2.
-Feature branch: feature/phase4f-bbs-selective-disclosure.
-Main must remain unchanged. No release, tag, PyPI publication or deployment.
-Python version remains 0.5.1 for regression compatibility; this feature build
-is NOT the published v0.5.1 distribution. Optional companion is private and
-separately packaged, with internal candidate version 0.6.0-dev.0.
+Repository: MYT-Core/MYT-Machine.
+Review ONLY the fixed annotated tag v0.6.0-rc1 and its exact peeled commit SHA
+recorded in the public release notes and external-review handoff. Verify using
+`git rev-parse 'v0.6.0-rc1^{commit}'` and compare with that published SHA.
+Do not review moving main or latest HEAD as a substitute.
+
+Reviewed feature ancestor: dc69abb41f8f044abecd146137162357fb242ffb.
+Previous stable baseline: 73beb99102f56671d6b2d85c9368bfa788249dc2.
+Python version: 0.6.0rc1. Separate optional companion: 0.6.0-rc1.
+PUBLIC REVIEW CANDIDATE. External cryptographic review: PENDING.
+Backend externally qualified: NO. No production approval, PyPI or deployment.
 
 ## Security claim to evaluate
 
@@ -48,16 +53,18 @@ It is NOT a third-party cryptographic audit.
 
 ## Handoff and remaining gate
 
-The exact feature commit plus its GitHub CI results are the review handoff.
-Local artifacts are validation-only, not install recommendations or a release.
+The exact release-tag commit, public asset hashes and main/tag CI results form
+the review handoff. Historical feature-validation hashes are NOT release hashes.
+Use the release's SHA256SUMS.txt for the separately published RC artifacts.
 Follow phase4f-bbs-review-checklist.md; explicitly report actual path/version
 coverage, limitations, findings and retest requirements.
 
 CRYPTO BACKEND EXTERNALLY QUALIFIED: NO.
 EXTERNAL CRYPTO REVIEW REQUIRED: YES.
 
-Successful engineering/CI gates authorize only feature-branch publication for
-review. They do not authorize merging to main or production use.
+Separate express authorization permits main integration and a public prerelease
+before external review. Successful engineering/CI gates do NOT constitute
+independent cryptographic qualification or authorize production use.
 
 Community design/adversarial-review credit: fallacyofall. Reference materials
 were reviewed as untrusted input; no merge or cherry-pick of contributor history

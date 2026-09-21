@@ -1,6 +1,7 @@
-# Optional MYT BBS companion (unreleased candidate)
+# Optional MYT BBS companion (v0.6.0-rc1 public review candidate)
 
-This is NOT independently cryptographically qualified. Do not deploy or release.
+External cryptographic review: PENDING. Backend externally qualified: NO.
+Public testing/review only. Not production-approved; do not deploy publicly.
 
 Python remains the MYT Machine application. Existing 4A-4E operations require no
 Node runtime. Only Phase 4F uses this explicitly installed, independently started

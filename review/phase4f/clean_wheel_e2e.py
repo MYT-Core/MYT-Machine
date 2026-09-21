@@ -22,7 +22,7 @@ parser.add_argument("--companion-entry", required=True)
 parser.add_argument("--vector", required=True)
 args = parser.parse_args()
 assert "site-packages" in str(Path(myt_machine.__file__)), "Must use installed wheel, not src"
-assert myt_machine.__version__ == "0.5.1"
+assert myt_machine.__version__ == "0.6.0rc1"
 env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "NODE_PATH", "NODE_OPTIONS")}
 env["MYT_WALLET_RPC_URL"] = "ftp://must-not-appear"
 env["PYTHONUTF8"] = "1"

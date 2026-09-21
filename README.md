@@ -1,9 +1,9 @@
 # MYT Machine Settlement, Identity, Address Binding, and Billing SDK/CLI
 
-> This feature branch contains the UNRELEASED Phase 4F engineering candidate.
-> It is NOT the released v0.5.1 artifact, although the Python runtime version
-> remains 0.5.1 to preserve all frozen regression and RPC User-Agent expectations.
-> No deployment or release approval. External cryptographic qualification: NO.
+> v0.6.0-rc1 is a PUBLIC REVIEW CANDIDATE, not a production-approved release.
+> INDEPENDENT EXTERNAL CRYPTOGRAPHIC REVIEW: PENDING.
+> CRYPTO BACKEND EXTERNALLY QUALIFIED: NO.
+> Published for public, integration and adversarial testing and external review.
 > Phase 4F requires the explicitly optional Node companion; existing 4A-4E do not.
 > See [candidate protocol](docs/phase4f-protocol-v1.md),
 > [runtime boundary](docs/phase4f-runtime-architecture.md), and
@@ -27,9 +27,13 @@
 - Phase 4E: offline signed reputation opinions, issuer revocations, private local
   settlement observations and an explicit deterministic local policy. No global
   trust score and no claim that Machine IDs represent independent people.
-- Phase 4F: future selective disclosure; not implemented.
+- Phase 4F: randomized BBS selective disclosure of evaluator-issued reputation
+  claims. The evaluator computes predicates from Phase 4E evidence; this is NOT
+  a mathematical hidden-value range proof. Exact counts, full history and
+  underlying settlement observations are not disclosed. Subject Machine ID and
+  evaluator remain public; metadata is linkable, so this is not full anonymity.
 
-Version `0.5.1` does not change MYT Core, consensus, emission, HF17, network
+Version `0.6.0rc1` does not change MYT Core, consensus, emission, HF17, network
 parameters, blockchain state, or wallet RPC schemas. The Phase 4A, Phase 4B, Phase 4C and Phase 4D
 interfaces remain backward compatible, as do the Phase 4E interfaces.
 
@@ -52,8 +56,9 @@ Uniqueness remains enforced inside the existing SQLite transaction. Private,
 service-owned directories and trusted local invoice databases remain required.
 
 The Wallet RPC User-Agent uses the same runtime version source as package
-metadata (`myt-machine/0.5.1`). No new runtime dependencies or spending paths
-are introduced. Phase 4F remains unimplemented.
+metadata (`myt-machine/0.6.0rc1` in this RC). These hardening guarantees are
+retained. Phase 4F adds no spending paths or Python runtime dependencies;
+its optional Node companion is installed and started separately.
 
 Phase 4E documentation: [model, CLI and offline E2E](docs/reputation.md),
 [signed artifact protocol](docs/reputation-attestation-v1.md), and
@@ -72,6 +77,19 @@ native OutProofV2, exact amount, correct network/recipient, ten confirmations by
 default and atomic transaction-reuse protection. Imported request artifacts
 cannot supply a payment state. See the invoice documentation for expiry, reorg,
 local-database trust and service-authorization limitations.
+
+## Public review candidate installation
+
+Use the GitHub prerelease tagged `v0.6.0-rc1`, verify `SHA256SUMS.txt`, and install
+`myt_machine_settlement-0.6.0rc1-py3-none-any.whl` in an isolated environment.
+The separate `myt-core-bbs-companion-0.6.0-rc1.tgz` contains the optional Phase 4F
+companion and exact dependency lock; follow its README for protected local
+setup. No Node runtime or Node dependencies are hidden in the Python wheel.
+This RC is not published to PyPI. Existing 4A-4E commands do not require Node.
+
+For external review, use the fixed tag and exact commit recorded in its release
+notes, never moving `main` or latest HEAD. See the
+[review scope](docs/phase4f-official-candidate-review-scope.md).
 
 ## Requirements
 

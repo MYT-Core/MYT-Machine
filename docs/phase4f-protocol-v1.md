@@ -1,13 +1,13 @@
 # Phase 4F v1 candidate protocol
 
-UNRELEASED FEATURE CANDIDATE. Python runtime version remains the baseline 0.5.1
-so all 487 existing expectations and the RPC User-Agent stay unchanged.
-This feature checkout is NOT the released v0.5.1 artifact. CRYPTO BACKEND EXTERNALLY QUALIFIED = NO.
-EXTERNAL CRYPTO REVIEW REQUIRED = YES. Not deployment approval.
+PUBLIC REVIEW CANDIDATE v0.6.0-rc1 (Python 0.6.0rc1).
+CRYPTO BACKEND EXTERNALLY QUALIFIED = NO.
+INDEPENDENT EXTERNAL CRYPTOGRAPHIC REVIEW = PENDING.
+Public testing and review only; not production or deployment approval.
 
 ## Meaning
 
-A trusted evaluator computes assertions from the actual v0.5.1 Phase 4E
+A trusted evaluator computes assertions from the unchanged Phase 4E
 ReputationStore, ReputationPolicy and reputation_summary. A holder proves
 possession of the resulting evaluator-signed credential and control of the
 independently expected Phase 4B subject identity.

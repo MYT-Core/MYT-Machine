@@ -336,13 +336,13 @@ class UserAgentHardeningTests(unittest.TestCase):
         return requests[0].get_header("User-agent")
 
     def test_runtime_version_and_agent(self):
-        self.assertEqual(__version__, "0.5.1")
+        self.assertEqual(__version__, "0.6.0rc1")
         self.assertEqual(self.capture(), "myt-machine/" + __version__)
 
     def test_source_checkout_needs_no_distribution_metadata(self):
         with patch("importlib.metadata.version", side_effect=importlib.metadata.PackageNotFoundError):
-            self.assertEqual(self.capture(), "myt-machine/0.5.1")
+            self.assertEqual(self.capture(), "myt-machine/0.6.0rc1")
 
     def test_stale_installed_metadata_cannot_override_loaded_code(self):
         with patch("importlib.metadata.version", return_value="0.3.0"):
-            self.assertEqual(self.capture(), "myt-machine/0.5.1")
+            self.assertEqual(self.capture(), "myt-machine/0.6.0rc1")

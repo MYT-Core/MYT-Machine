@@ -1,5 +1,55 @@
 # MYT Phase 4F Official Candidate Validation
 
+## Public RC status
+
+v0.6.0-rc1 is separately authorized for main integration and public prerelease
+BEFORE external cryptographic review. Python version is now 0.6.0rc1; the
+separate companion is 0.6.0-rc1. Backend externally qualified: NO.
+Independent external cryptographic review: PENDING. Not production approval.
+The dated feature evidence below is historical: its 0.5.1-named validation
+archives MUST NOT be published as this release. RC validation and final hashes
+are reported separately in the fixed-tag release notes and review handoff.
+Earlier merge/release prohibitions below describe the feature-review stage;
+they do not override the subsequent explicit public-RC authorization.
+
+## RC integration validation (2026-09-21)
+
+Final local matrix: 68/68 gates accepted. Linux: 553 passing tests per
+configuration. Native Windows: 544 passing tests plus exactly the nine
+documented unchanged legacy skips per configuration. Python 3.10, 3.12 and
+3.13; cryptography 50.0.0 and 50.0.1. Native Node 24.20.0 and 24.21.0:
+67 tests each. Independent harness: 33 cases per Python configuration;
+nine additional final adversarial cases passed on each platform.
+
+One initial Linux Python 3.13/latest run hit the fail-closed clock-rollback
+guard during a random-challenge test. The WSL journal reported repeated clock
+changes. A subsequent complete, unchanged 553-test run passed with no errors,
+skips or ResourceWarnings; separate telemetry observed negative realtime
+corrections relative to the monotonic clock. Original failed logs are retained.
+No clock guard, test assertion, cryptographic code or system clock was changed.
+An interrupted diagnostic helper lacking a spawn-safe entry point was discarded
+and is not counted as validation evidence.
+
+Clean-wheel/packed-companion offline E2E passed on Linux and native Windows:
+13 structured CLI results, actual Phase 4E store with synthetic observations,
+400-byte proof, keyless verifier, public vector, audience rejection, durable
+replay rejection and secret redaction. No funds or network chain were used.
+The wheel rebuilt from the sdist has identical entry-by-entry payload.
+
+Ruff, Bandit, compileall, pip check, dependency integrity, npm audit, archive
+inspection and twine checks passed. pip-audit found no known vulnerabilities
+in the audited dependencies; MYT itself is not on PyPI and cannot be audited
+against that registry. This is not a source or cryptographic audit.
+
+Only 13 version/release-documentation/test-expectation paths changed since
+the approved feature commit. Product changes are limited to the version
+constant; crypto dependency pins and protocol code are unchanged.
+The three User-Agent/version expectations now require 0.6.0rc1, with their
+assertions otherwise unchanged. Main/tag CI and clean-tag release builds are
+separate mandatory post-integration gates, not claimed complete here.
+
+## Historical feature-validation snapshot
+
 Date: 2026-09-20. Baseline: 73beb99102f56671d6b2d85c9368bfa788249dc2.
 Branch: feature/phase4f-bbs-selective-disclosure. Main remains unchanged.
 Python version: 0.5.1, not a release bump. These local feature artifacts are

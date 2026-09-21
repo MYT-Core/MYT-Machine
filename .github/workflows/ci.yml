@@ -179,7 +179,7 @@ jobs:
 
           wheel = glob.glob('dist/*.whl')
           assert len(wheel) == 1, wheel
-          assert wheel[0].endswith('myt_machine_settlement-0.5.1-py3-none-any.whl'), wheel
+          assert wheel[0].endswith('myt_machine_settlement-0.6.0rc1-py3-none-any.whl'), wheel
           with zipfile.ZipFile(wheel[0]) as archive:
               metadata_name = next(name for name in archive.namelist() if name.endswith('/METADATA'))
               metadata = archive.read(metadata_name).decode('utf-8')
@@ -189,30 +189,30 @@ jobs:
           PY
       - name: Verify source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/identity-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/identity-v1-test-vector.json$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/address-binding-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/identity-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/identity-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/address-binding-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
       - name: Verify Phase 4D source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/payment-requests.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/payment-request-v1-test-vector.json$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/invoices.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/api-billing.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/payment-requests.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/payment-request-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/invoices.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/api-billing.md$'
       - name: Check distribution metadata
         run: python -m twine check dist/*.whl dist/*.tar.gz
       - name: Verify Phase 4E source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/reputation.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/reputation-policy.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/reputation-attestation-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.5.1.tar.gz | grep '/docs/reputation-attestation-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation-policy.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation-attestation-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation-attestation-v1-test-vector.json$'
       - name: Smoke-test installed wheel
         run: |
           python -m venv /tmp/myt-machine-wheel
           /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check --upgrade pip setuptools
           /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check dist/*.whl
-          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.5.1"
+          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.6.0rc1"
 
           work=$(mktemp -d)
           trap 'rm -rf "$work"' EXIT
@@ -309,6 +309,6 @@ jobs:
           /tmp/myt-machine-wheel/bin/python "$GITHUB_WORKSPACE/review/phase4f/clean_wheel_e2e.py" --node "$(command -v node)" --companion-entry /tmp/myt-packed-bbs/package/src/cli.mjs --vector "$GITHUB_WORKSPACE/docs/phase4f-header-vector.json"
       - uses: actions/upload-artifact@v7
         with:
-          name: myt-machine-phase4f-unreleased-candidate
+          name: myt-machine-v0.6.0-rc1
           path: dist/*
           if-no-files-found: error
