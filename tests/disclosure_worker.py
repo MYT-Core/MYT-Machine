@@ -7,10 +7,10 @@ from myt_machine.disclosure_store import DisclosureStore
 
 
 def consume(data):
-    raw, policy, path, url, token = data
+    raw, policy, path, url, token, cert = data
     return verify_reputation_presentation(
         presentation=parse_disclosure(raw),
         policy=DisclosurePolicy(**policy),
         store=DisclosureStore(path),
-        backend=BbsBackend(url=url, token_file=token),
+        backend=BbsBackend(url=url, token_file=token, tls_cert_file=cert),
     ).valid

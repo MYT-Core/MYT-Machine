@@ -19,6 +19,7 @@ from .binding_artifacts import (
     save_address_binding,
 )
 from .disclosure_cli import add_disclosure_parsers, run_disclosure_command
+from .disclosure_files import read_regular
 from .errors import ConfigurationError, InputError, MytMachineError, WalletRpcError
 from .identity import (
     MAX_IDENTITY_MESSAGE_BYTES,
@@ -254,12 +255,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _read_password_file(path: str) -> str:
     try:
-        with Path(path).open("rb") as password_file:
-            data = password_file.read(MAX_PASSWORD_FILE_BYTES + 1)
-    except OSError as exc:
-        raise ConfigurationError("Unable to read Wallet RPC password file") from exc
-    if len(data) > MAX_PASSWORD_FILE_BYTES:
-        raise ConfigurationError("Wallet RPC password file exceeds the size limit")
+        data = read_regular(path, MAX_PASSWORD_FILE_BYTES, private=True)
+    except (InputError, ConfigurationError):
+        raise ConfigurationError("Wallet RPC password file must be a protected regular file") from None
     try:
         password = data.decode("utf-8")
     except UnicodeDecodeError:

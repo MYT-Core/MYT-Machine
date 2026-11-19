@@ -1,6 +1,6 @@
 # Phase 4F runtime decision
 
-Public review candidate v0.6.0-rc1, not production approval.
+Public review candidate v0.6.0-rc2. Independent cryptographic review is pending.
 External cryptographic review: PENDING. Backend externally qualified: NO.
 Baseline: 73beb99102f56671d6b2d85c9368bfa788249dc2.
 
@@ -15,7 +15,7 @@ do not discover, start, install, contact or depend on Node.
 | Option | Assessment |
 | --- | --- |
 | A: per-operation Python subprocess | Reject: executable/environment injection, repeated startup and secret IPC; no need to inherit the experimental bridge. |
-| B: persistent authenticated local Node sidecar | Choose for the narrow BBS boundary. Fixed API, explicit launch, protected bearer capability, no subprocess spawning. Separate crash domain and version handshake. |
+| B: persistent authenticated local Node sidecar | Choose for the narrow BBS boundary. Fixed API, explicit launch, pinned TLS identity and protected bearer capability. Separate crash domain and version handshake. |
 | C: separate JS companion CLI only / artifact handoff | Explicit packaging is desirable and retained; offline multi-step handoff alone complicates trustworthy issuance and consume-after-verification. The companion therefore serves the narrow BBS API. |
 | D: native binding | No independently qualified maintained Python binding to this pinned JS implementation was established. Embedding another runtime expands packaging/ABI review. |
 | E: different backend | Earlier research does not establish equivalent audited, supported cross-platform evidence. Do not replace primitives to avoid the runtime decision. |
@@ -23,7 +23,7 @@ do not discover, start, install, contact or depend on Node.
 ## Trust and secret boundaries
 
 Node binds only 127.0.0.1. Requests require a protected random 256-bit bearer
-capability file, exact protocol version, exact JSON schema and bounded I/O.
+capability file, pinned TLS certificate, exact protocol version, exact JSON schema and bounded I/O.
 No wildcard address, proxy, redirect, remote endpoint, CORS, browser origin,
 arbitrary method, file path from requests or executable selection is supported.
 A capability holder has authority to use the configured signing key; it is

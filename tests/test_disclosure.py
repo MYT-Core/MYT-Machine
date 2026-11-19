@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import io
 import json
 import multiprocessing
@@ -12,7 +13,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 from unittest.mock import patch
 
-from disclosure_support import CompanionFixture
+from disclosure_support import CompanionFixture, make_tls_identity
 from disclosure_worker import consume
 
 from myt_machine.cli import main
@@ -40,7 +41,12 @@ from myt_machine.disclosure_artifacts import (
 )
 from myt_machine.disclosure_backend import BbsBackend, DisclosureBackendError
 from myt_machine.disclosure_files import load_disclosure, save_disclosure
-from myt_machine.disclosure_store import DisclosureStorageError, DisclosureStore
+from myt_machine.disclosure_store import (
+    _SCHEMA_V1,
+    APP_ID,
+    DisclosureStorageError,
+    DisclosureStore,
+)
 from myt_machine.errors import ConfigurationError, InputError
 from myt_machine.identity import MachineIdentity
 from myt_machine.payment_requests import unix_time
@@ -157,6 +163,7 @@ class DisclosureTests(unittest.TestCase):
             str(self.state.path),
             self.companion.url,
             str(self.companion.token),
+            str(self.companion.tls_cert),
         )
         with ProcessPoolExecutor(
             max_workers=16, mp_context=multiprocessing.get_context("spawn")
@@ -273,6 +280,62 @@ class DisclosureTests(unittest.TestCase):
             self.authorization, expected_evaluator=self.evaluator.machine_id
         )
         self.assertFalse(self.verify(value).valid)
+
+    def test_companion_connection_rejects_untrusted_certificate(self):
+        certificate, _ = make_tls_identity(self.root, "unrelated")
+        backend = BbsBackend(
+            url=self.companion.url, token_file=self.companion.token, tls_cert_file=certificate
+        )
+        with self.assertRaises(DisclosureBackendError):
+            backend.call("hello", {})
+
+    def test_store_reclaims_expired_request_slots(self):
+        store = DisclosureStore(self.root / "bounded.db", capacity=1)
+        first = create_disclosure_request(self.policy, store, lifetime=1)
+        expiry = first.as_dict()["expires_at"]
+        with (
+            patch("myt_machine.disclosure.unix_time", return_value=expiry),
+            patch("myt_machine.disclosure_store.unix_time", return_value=expiry),
+        ):
+            second = create_disclosure_request(self.policy, store)
+        self.assertNotEqual(first.as_dict()["challenge"], second.as_dict()["challenge"])
+        with store._transaction() as db:
+            self.assertEqual(db.execute("SELECT count(*) FROM requests").fetchone(), (1,))
+
+    def test_store_preserves_used_challenge_on_upgrade(self):
+        request = self.request()
+        value = request.as_dict()
+        path = self.root / "legacy.db"
+        with closing(sqlite3.connect(path)) as db:
+            for statement in _SCHEMA_V1:
+                db.execute(statement)
+            db.execute("INSERT INTO clock VALUES (1,0)")
+            db.execute(f"PRAGMA application_id={APP_ID}")
+            db.execute("PRAGMA user_version=1")
+            db.execute("INSERT INTO requests VALUES (?,?,?,1)", (
+                value["challenge"], request.raw,
+                hashlib.sha256(request.raw).hexdigest(),
+            ))
+            db.commit()
+        path.chmod(0o600)
+        with DisclosureStore(path)._transaction() as db:
+            self.assertEqual(db.execute("PRAGMA user_version").fetchone(), (2,))
+            self.assertEqual(db.execute("SELECT used,expires_at FROM requests").fetchone(),
+                             (1, value["expires_at"]))
+
+    def test_status_imports_revocation_with_renewed_authorization(self):
+        old = self.authorization
+        renewed = authorize_bbs_key(
+            self.evaluator, self.backend, network=self.policy.network, lifetime=3600
+        )
+        self.assertNotEqual(old.as_dict()["id"], renewed.as_dict()["id"])
+        revocation = revoke_bbs_key(self.evaluator, old, reason="retired")
+        state = DisclosureStore(self.root / "new-verifier.db", capacity=1)
+        create_disclosure_request(self.policy, state)
+        state.refresh_issuer(renewed, expected_evaluator=self.evaluator.machine_id,
+                             revocations=[revocation])
+        with self.assertRaises(InputError):
+            state.check_issuer(renewed.as_dict(), self.evaluator.machine_id)
 
     def test_revocation_wrong_signer(self):
         with self.assertRaises(InputError):

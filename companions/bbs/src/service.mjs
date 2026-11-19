@@ -1,18 +1,23 @@
-import http from 'node:http';
+import https from 'node:https';
 import {timingSafeEqual} from 'node:crypto';
-import {capability} from './files.mjs';
+import {capability, readRegular} from './files.mjs';
 import {encode, parse, exact, requireThat, PROFILE, SUITE, VERSIONS, runtimeGate} from './encoding.mjs';
 import {execute} from './crypto.mjs';
 import {loadKey} from './keys.mjs';
 
-export async function serve({port, tokenFile, keyFile, passwordFile}) {
+export async function serve({port, tokenFile, keyFile, passwordFile, tlsCertFile, tlsKeyFile}) {
   runtimeGate();
   requireThat(Number.isInteger(port) && port >= 1024 && port <= 65535);
   requireThat(Boolean(keyFile) === Boolean(passwordFile));
   const token = capability(tokenFile);
   const keys = keyFile ? await loadKey(keyFile, passwordFile) : undefined;
+  const cert = readRegular(tlsCertFile, 16384, false);
+  const key = readRegular(tlsKeyFile, 16384);
   let busy = false;
-  const server = http.createServer({maxHeaderSize: 4096}, async (req, res) => {
+  const server = https.createServer({
+    cert, key, minVersion: 'TLSv1.2', maxHeaderSize: 4096,
+    handshakeTimeout: 3000, connectionsCheckingInterval: 1000
+  }, async (req, res) => {
     const fail = () => {
       if(!res.headersSent) {
         res.writeHead(400, {'Content-Type': 'application/json', 'Connection': 'close'});
@@ -57,6 +62,7 @@ export async function serve({port, tokenFile, keyFile, passwordFile}) {
       } finally { busy = false; }
     } catch { fail(); }
   });
+  key.fill(0);
   server.requestTimeout = 10000;
   server.headersTimeout = 5000;
   server.keepAliveTimeout = 1000;

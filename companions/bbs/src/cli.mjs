@@ -11,7 +11,8 @@ try {
   runtimeGate();
   const {values, positionals} = parseArgs({allowPositionals: true, strict: true, options: {
     'token-file': {type: 'string'}, 'key-file': {type: 'string'},
-    'passphrase-file': {type: 'string'}, port: {type: 'string'}
+    'passphrase-file': {type: 'string'}, 'tls-cert-file': {type: 'string'},
+    'tls-key-file': {type: 'string'}, port: {type: 'string'}
   }});
   requireThat(positionals.length === 1);
   const command = positionals[0];
@@ -26,9 +27,11 @@ try {
     result = await createKey(values['key-file'], values['passphrase-file']);
   } else {
     requireThat(command === 'serve' && values['token-file'] && values.port &&
+      values['tls-cert-file'] && values['tls-key-file'] &&
       /^[1-9][0-9]{3,4}$/.test(values.port));
     const server = await serve({port: Number(values.port), tokenFile: values['token-file'],
-      keyFile: values['key-file'], passwordFile: values['passphrase-file']});
+      keyFile: values['key-file'], passwordFile: values['passphrase-file'],
+      tlsCertFile: values['tls-cert-file'], tlsKeyFile: values['tls-key-file']});
     for(const signal of ['SIGINT', 'SIGTERM']) {
       process.once(signal, () => { server.close(); server.closeAllConnections(); });
     }

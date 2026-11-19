@@ -191,8 +191,13 @@ class MachineSettlement:
             },
             mutation=True,
         )
-        txid = normalize_txid(_rpc_string(response.get("tx_hash"), "transaction hash"))
-        fee = _rpc_int(response.get("fee"), "transaction fee")
+        try:
+            txid = normalize_txid(_rpc_string(response.get("tx_hash"), "transaction hash"))
+            fee = _rpc_int(response.get("fee"), "transaction fee")
+        except (InputError, RpcProtocolError):
+            raise RpcProtocolError(
+                "Wallet RPC returned an invalid transfer receipt", outcome_unknown=True
+            ) from None
         return {
             "txid": txid,
             "destination": address_info["address"],

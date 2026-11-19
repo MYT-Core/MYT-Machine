@@ -1,4 +1,4 @@
-# Optional MYT BBS companion (v0.6.0-rc1 public review candidate)
+# Optional MYT BBS companion (v0.6.0-rc2 development build)
 
 External cryptographic review: PENDING. Backend externally qualified: NO.
 Public testing/review only. Not production-approved; do not deploy publicly.
@@ -18,15 +18,35 @@ passphrase on one line in a 0600 regular, single-link file. On Windows explicitl
 restrict the directory and files to the service user with NTFS ACLs; POSIX mode
 bits are not an ACL guarantee.
 
+Provision a separate TLS key and certificate for each companion. For example,
+generate a self-signed certificate with an IP SAN for 127.0.0.1 in the private
+directory.
+
+    umask 077
+    openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -noenc -days 365 -sha256 -subj "/CN=MYT BBS Companion" -addext "subjectAltName=IP:127.0.0.1" -keyout /protected/companion-tls-key.pem -out /protected/companion-tls-cert.pem
     node src/cli.mjs token-create --token-file /protected/capability
     node src/cli.mjs key-create --key-file /protected/bbs-key.json --passphrase-file /protected/passphrase
-    node src/cli.mjs serve --port 39190 --token-file /protected/capability --key-file /protected/bbs-key.json --passphrase-file /protected/passphrase
+    node src/cli.mjs serve --port 39190 --token-file /protected/capability --tls-cert-file /protected/companion-tls-cert.pem --tls-key-file /protected/companion-tls-key.pem --key-file /protected/bbs-key.json --passphrase-file /protected/passphrase
 
-A verifier can omit both key/passphrase options. Never expose this service,
-forward its port, or give its capability to untrusted parties. Capability
-possession grants cryptographic signing authority for the configured issuer.
-The service is NOT a public issuance policy API. The official Python issuer
-computes predicates from the real Phase 4E store before signing.
+Pass the certificate through a trusted channel to the Python client and keep
+its local copy in a protected directory with owner-only write access. Use mode
+0600 on Unix. For authorize, issue, present and verify supply the following
+connection options together with the command's existing options.
+
+    --bbs-url https://127.0.0.1:39190 --bbs-token-file /protected/capability --bbs-tls-cert-file /protected/companion-tls-cert.pem
+
+For SDK clients pass the same PEM with BbsBackend(tls_cert_file=...).
+Coordinate certificate replacement with service and client changes. Use separate
+ports, certificates and capabilities for the signer and verification-only
+service. A verification-only companion takes the TLS key and certificate and
+omits the BBS key and passphrase options. The bearer capability on a signing
+service grants cryptographic signing authority. When upgrading from RC1, stop
+the old listeners and generate a fresh capability for each service. Distribute
+the new capabilities only to their respective clients. If unauthorized use of
+an RC1 signing capability is suspected, revoke the affected BBS issuer key and
+reissue credentials under a new authorized key. Bind to loopback on a dedicated
+or isolated host when untrusted local users share the system. Connection and
+handshake limits bound resource use per connection.
 
 Key files use the existing Node scrypt and AES-256-GCM implementations:
 N=131072,r=8,p=1; random 16-byte salt and 12-byte nonce; authenticated metadata.
@@ -50,4 +70,7 @@ not contain this companion.
 Design and adversarial-review credit: community contributor fallacyofall.
 The official profile is not wire-compatible with the unreleased experiments.
 Backend: Digital Bazaar BBS 3.1.0; Noble curves/hashes 2.4.0 (exact locks).
+The companion requires nonzero canonical scalars in standard BBS signature and
+proof encodings. The mapping from messages to generators in the pinned
+dependency remains in scope for external review.
 External review of this exact composition remains mandatory.

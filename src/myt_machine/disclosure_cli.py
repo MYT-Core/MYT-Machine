@@ -22,7 +22,7 @@ from .disclosure_files import (
     save_disclosure,
 )
 from .disclosure_store import DisclosureStore
-from .errors import ConfigurationError, InputError
+from .errors import ConfigurationError, InputError, MytMachineError
 from .identity_artifacts import load_public_identity
 from .identity_keys import load_private_identity
 from .reputation_policy import ReputationPolicy
@@ -49,6 +49,7 @@ def add_disclosure_parsers(subparsers):
         if name in ("authorize", "issue", "present", "verify"):
             p.add_argument("--bbs-url", required=True)
             p.add_argument("--bbs-token-file", required=True)
+            p.add_argument("--bbs-tls-cert-file", required=True)
         if name in ("authorize", "revoke", "issue", "present"):
             p.add_argument("--private-key-file", required=True)
             p.add_argument("--identity-file", required=True)
@@ -145,7 +146,11 @@ def run_disclosure_command(args, passphrase_loader):
         if identity.public_identity != public:
             raise ConfigurationError("Disclosure private and public identities differ")
     backend = (
-        BbsBackend(url=args.bbs_url, token_file=args.bbs_token_file)
+        BbsBackend(
+            url=args.bbs_url,
+            token_file=args.bbs_token_file,
+            tls_cert_file=args.bbs_tls_cert_file,
+        )
         if hasattr(args, "bbs_url")
         else None
     )
@@ -212,5 +217,14 @@ def run_disclosure_command(args, passphrase_loader):
         return asdict(result), result.valid
     else:
         raise InputError("Unknown disclosure command")
-    save_disclosure(args.output_file, value)
+    try:
+        save_disclosure(args.output_file, value)
+    except MytMachineError:
+        if action == "request":
+            try:
+                state.discard_unpublished_request(value)
+            except MytMachineError:
+                # Expiry pruning can reclaim the row if this cleanup is interrupted.
+                pass
+        raise
     return {"artifact": value.as_dict()}, True

@@ -1,6 +1,7 @@
 """Final separate adversarial gate; valid signatures on hostile statements."""
 import base64
 import http.client
+import ssl
 import json
 import unittest
 from urllib.parse import urlsplit
@@ -91,7 +92,8 @@ class FinalAttacks(setup.IndependentAttacks):
         port = urlsplit(self.companion.url).port
         token = self.companion.token.read_text().strip()
         raw = b'{"id":"00000000000000000000000000000000","operation":"hello","params":{},"version":1,"version":1}\n'
-        conn = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+        conn = http.client.HTTPSConnection("127.0.0.1", port, timeout=10,
+            context=ssl.create_default_context(cafile=str(self.companion.tls_cert)))
         try:
             conn.request("POST", "/v1", body=raw, headers={
                 "Content-Type": "application/json", "Authorization": "Bearer " + token,
@@ -106,7 +108,8 @@ class FinalAttacks(setup.IndependentAttacks):
 
     def test_final_invalid_capability_rejected_without_leak(self):
         port = urlsplit(self.companion.url).port
-        conn = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+        conn = http.client.HTTPSConnection("127.0.0.1", port, timeout=10,
+            context=ssl.create_default_context(cafile=str(self.companion.tls_cert)))
         try:
             conn.request("POST", "/v1", body=b"{}\n", headers={
                 "Content-Type": "application/json",
