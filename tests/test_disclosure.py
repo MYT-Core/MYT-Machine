@@ -291,7 +291,12 @@ class DisclosureTests(unittest.TestCase):
 
     def test_store_reclaims_expired_request_slots(self):
         store = DisclosureStore(self.root / "bounded.db", capacity=1)
-        first = create_disclosure_request(self.policy, store, lifetime=1)
+        now = unix_time()
+        with (
+            patch("myt_machine.disclosure.unix_time", return_value=now),
+            patch("myt_machine.disclosure_store.unix_time", return_value=now),
+        ):
+            first = create_disclosure_request(self.policy, store, lifetime=1)
         expiry = first.as_dict()["expires_at"]
         with (
             patch("myt_machine.disclosure.unix_time", return_value=expiry),
