@@ -323,6 +323,50 @@ class DisclosureTests(unittest.TestCase):
             self.assertEqual(db.execute("SELECT used,expires_at FROM requests").fetchone(),
                              (1, value["expires_at"]))
 
+    def test_backup_migration_preserves_replay_and_revocations(self):
+        request = self.request()
+        proof = self.presentation(request)
+        self.assertTrue(self.verify(proof).valid)
+        revocation = revoke_bbs_key(self.evaluator, self.authorization, reason="retired")
+        self.state.refresh_issuer(
+            self.authorization, expected_evaluator=self.evaluator.machine_id,
+            revocations=[revocation],
+        )
+        legacy = self.root / "legacy-original.db"
+        copied = self.root / "legacy-backup.db"
+        with self.state._transaction() as source, closing(sqlite3.connect(legacy)) as db:
+            for statement in _SCHEMA_V1:
+                db.execute(statement)
+            for table, columns in (
+                ("clock", "id,floor"),
+                ("requests", "challenge,artifact,digest,used"),
+                ("issuers", "id,artifact,digest,checked_at"),
+                ("revocations", "id,artifact,digest"),
+            ):
+                rows = source.execute(f"SELECT {columns} FROM {table}").fetchall()
+                placeholders = ",".join("?" for _ in columns.split(","))
+                db.executemany(f"INSERT INTO {table} VALUES ({placeholders})", rows)
+            db.execute(f"PRAGMA application_id={APP_ID}")
+            db.execute("PRAGMA user_version=1")
+            db.commit()
+        legacy.chmod(0o600)
+        before = hashlib.sha256(legacy.read_bytes()).digest()
+        with (
+            closing(sqlite3.connect(legacy)) as source,
+            closing(sqlite3.connect(copied)) as destination,
+        ):
+            source.backup(destination)
+        copied.chmod(0o600)
+        upgraded = DisclosureStore(copied)
+        self.assertEqual(hashlib.sha256(legacy.read_bytes()).digest(), before)
+        with upgraded._transaction() as db:
+            self.assertEqual(db.execute("PRAGMA user_version").fetchone(), (2,))
+            self.assertEqual(db.execute("SELECT used FROM requests").fetchone(), (1,))
+            self.assertEqual(db.execute("SELECT count(*) FROM revocations").fetchone(), (1,))
+        with self.assertRaises(InputError):
+            upgraded.check_issuer(self.authorization.as_dict(), self.evaluator.machine_id)
+        self.assertFalse(self.verify(proof, store=upgraded).valid)
+
     def test_status_imports_revocation_with_renewed_authorization(self):
         old = self.authorization
         renewed = authorize_bbs_key(
