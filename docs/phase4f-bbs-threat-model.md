@@ -19,9 +19,15 @@ challenge atomically only after all checks, with an exact expiry boundary.
 Artifacts, encoded messages, proof points, public keys, network peers and
 external contribution source are untrusted. Strict schema/size/canonical bytes
 are required before native cryptographic work. Native validation cannot be
-replaced by caller flags. The loopback service rejects unknown operations and
-fields, unauthenticated requests, browser Origin, wrong Host, redirects/proxies,
-arbitrary domains and normalized presentation headers.
+replaced by caller flags. The client validates and pins the listener's TLS
+certificate before sending its capability. The loopback service rejects unknown
+operations and fields, unauthenticated requests, browser Origin, wrong Host,
+redirects/proxies, arbitrary domains and normalized presentation headers.
+
+RC1 sent the bearer capability over unauthenticated loopback HTTP. Reuse
+between signer and verifier extended the verifier's capability to the signing
+service. During the upgrade, stop the old listeners, replace the capabilities,
+and provision distinct credentials for signing and verification.
 
 ## Trusted and limited components
 

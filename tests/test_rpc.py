@@ -259,6 +259,7 @@ class WalletRpcClientTests(unittest.TestCase):
         requests = server.requests  # type: ignore[attr-defined]
         self.assertEqual(len(requests), 2)
         self.assertIsNone(requests[0]["authorization"])
+        self.assertEqual(requests[0]["payload"]["method"], "get_version")
         self.assertTrue(requests[1]["authorization"].startswith("Digest "))
         self.assertEqual(requests[0]["handler_id"], requests[1]["handler_id"])
 
@@ -275,6 +276,15 @@ class WalletRpcClientTests(unittest.TestCase):
         ]
         self.assertEqual(len(authorized), 1)
         self.assertEqual(authorized[0]["payload"]["method"], "transfer")
+
+    def test_configured_credentials_require_challenge(self):
+        with rpc_server("ok") as (url, server):
+            client = WalletRpcClient(
+                RpcConfig(url=url, username=DIGEST_USER, password=DIGEST_PASSWORD)
+            )
+            with self.assertRaises(RpcAuthenticationError):
+                client.call("get_height")
+        self.assertEqual([r["payload"]["method"] for r in server.requests], ["get_version"])
 
     def test_authentication_failure_is_structured(self):
         with rpc_server("auth_fail") as (url, _):

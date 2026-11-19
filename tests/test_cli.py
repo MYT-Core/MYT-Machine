@@ -141,6 +141,7 @@ class CliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             password_file = Path(directory) / "rpc-password"
             password_file.write_text("file-secret\n", encoding="utf-8")
+            password_file.chmod(0o600)
             code, _, factory = run_cli(
                 [
                     "--rpc-url",

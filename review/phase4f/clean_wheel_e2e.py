@@ -22,7 +22,7 @@ parser.add_argument("--companion-entry", required=True)
 parser.add_argument("--vector", required=True)
 args = parser.parse_args()
 assert "site-packages" in str(Path(myt_machine.__file__)), "Must use installed wheel, not src"
-assert myt_machine.__version__ == "0.6.0rc1"
+assert myt_machine.__version__ == "0.6.0rc2"
 env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "NODE_PATH", "NODE_OPTIONS")}
 env["MYT_WALLET_RPC_URL"] = "ftp://must-not-appear"
 env["PYTHONUTF8"] = "1"
@@ -66,24 +66,34 @@ with tempfile.TemporaryDirectory(prefix="myt-clean-wheel-") as directory:
         assert phrase.encode() not in done.stdout
         return json.loads(done.stdout)
 
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tests"))
+    from disclosure_support import make_tls_identity
+
+    signer_token = token
+    verifier_token = root / "verifier-capability"
+    signer_cert, signer_key = make_tls_identity(root, "signer-tls")
+    verifier_cert, verifier_key = make_tls_identity(root, "verifier-tls")
+    tls_cert, tls_key = signer_cert, signer_key
+
     def start(signing):
         global process
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
-        values = ["serve", "--port", str(port), "--token-file", str(token)]
+        values = ["serve", "--port", str(port), "--token-file", str(token),
+                  "--tls-cert-file", str(tls_cert), "--tls-key-file", str(tls_key)]
         if signing:
             values += ["--key-file", str(key), "--passphrase-file", str(password)]
         process = subprocess.Popen(
             [args.node, args.companion_entry, *values], env=env, cwd=root,
             stdout=log, stderr=log,
         )
-        backend = BbsBackend(url=f"http://127.0.0.1:{port}", token_file=token)
+        backend = BbsBackend(url=f"https://127.0.0.1:{port}", token_file=token, tls_cert_file=tls_cert)
         for _ in range(100):
             try:
                 result = backend.call("hello", {})
                 assert result["signing"] is signing
-                return [f"http://127.0.0.1:{port}", backend]
+                return [f"https://127.0.0.1:{port}", backend]
             except DisclosureBackendError:
                 if process.poll() is not None:
                     break
@@ -115,11 +125,13 @@ with tempfile.TemporaryDirectory(prefix="myt-clean-wheel-") as directory:
                     "--identity-file", root / (name + ".json"), "--passphrase-file", password]
 
         node("token-create", "--token-file", token)
+        node("token-create", "--token-file", verifier_token)
+        assert signer_token.read_bytes() != verifier_token.read_bytes()
         node("key-create", "--key-file", key, "--passphrase-file", password)
         url, backend = start(True)
 
         def backend_options():
-            return ["--bbs-url", url, "--bbs-token-file", token]
+            return ["--bbs-url", url, "--bbs-token-file", token, "--bbs-tls-cert-file", tls_cert]
 
         authorization = root / "authorization.json"
         auth = cli("disclosure", "authorize", *identity("evaluator"), *backend_options(),
@@ -166,7 +178,27 @@ with tempfile.TemporaryDirectory(prefix="myt-clean-wheel-") as directory:
         assert "predicates" not in proof["claims"] and "metric_value" not in proof["claims"]
         assert len(base64.urlsafe_b64decode(proof["proof"] + "==")) == 400
         stop()
+        token = verifier_token
+        tls_cert, tls_key = verifier_cert, verifier_key
         url, backend = start(False)
+        wrong_capability = BbsBackend(
+            url=url, token_file=signer_token, tls_cert_file=verifier_cert,
+        )
+        try:
+            wrong_capability.call("hello", {})
+        except DisclosureBackendError:
+            pass
+        else:
+            raise AssertionError("Verifier accepted signer capability")
+        wrong_pin = BbsBackend(
+            url=url, token_file=verifier_token, tls_cert_file=signer_cert,
+        )
+        try:
+            wrong_pin.call("hello", {})
+        except DisclosureBackendError:
+            pass
+        else:
+            raise AssertionError("Verifier accepted signer TLS identity")
         common = ["disclosure", "verify", *policy, *backend_options(),
                   "--state-db", verifier, "--artifact-file", presentation]
         wrong = cli(*common, "--audience", "wrong.example", expected=1)
@@ -194,12 +226,13 @@ with tempfile.TemporaryDirectory(prefix="myt-clean-wheel-") as directory:
             "request": vector["request"], "threshold": vector["request"]["threshold"],
             "presentation_header": vector["presentation_header_base64url"],
         }) == {"valid": True}
-        capability = token.read_text().strip()
+        capabilities = [path.read_text().strip() for path in (signer_token, verifier_token)]
         for text in outputs:
-            assert capability not in text and phrase not in text
+            assert all(capability not in text for capability in capabilities) and phrase not in text
         print(json.dumps({
             "installed_wheel": True, "version": myt_machine.__version__,
             "separate_packed_companion": True, "keyless_verifier": True,
+            "separate_capabilities_and_tls": True, "wrong_capability_and_pin_rejected": True,
             "identity_to_real_phase4e_store_to_credential_to_disclosure": True,
             "synthetic_observations": True, "no_wallet_daemon_blockchain": True,
             "negative_audience": True, "durable_replay": True, "secret_redaction": True,

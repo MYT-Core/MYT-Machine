@@ -204,20 +204,30 @@ class _PersistentDigestHandler(BaseHandler):
     def _open(self, request: Request) -> _ConnectionResponse:
         connection = self._connection(request)
         try:
-            response = self._send(
-                connection,
-                request,
-                self._request_headers(request, close=self.username is None),
-            )
-            if response.status != 401 or self.username is None:
+            if self.username is None:
+                response = self._send(
+                    connection, request, self._request_headers(request, close=True)
+                )
                 return _ConnectionResponse(connection, response, request.full_url)
 
-            challenge_body = response.read(MAX_AUTH_CHALLENGE_BYTES + 1)
-            if len(challenge_body) > MAX_AUTH_CHALLENGE_BYTES:
-                raise _DigestChallengeError("Wallet RPC Digest challenge exceeds the size limit")
-            challenge = self._challenge(response.headers)
-            if challenge is None:
-                return _ConnectionResponse(connection, response, request.full_url)
+            # Obtain the connection-scoped challenge with a read-only operation.
+            # The original RPC must only reach the wallet with Authorization.
+            probe = Request(
+                request.full_url,
+                data=b'{"jsonrpc":"2.0","id":"auth","method":"get_version"}',
+                headers={"Content-Type": "application/json", "Accept": "application/json"},
+                method="POST",
+            )
+            with self._send(
+                connection, probe, self._request_headers(probe, close=False)
+            ) as response:
+                if response.status != 401:
+                    raise RpcAuthenticationError("Wallet RPC did not require Digest authentication")
+                if len(response.read(MAX_AUTH_CHALLENGE_BYTES + 1)) > MAX_AUTH_CHALLENGE_BYTES:
+                    raise RpcAuthenticationError("Wallet RPC Digest challenge exceeds the size limit")
+                challenge = self._challenge(response.headers)
+                if challenge is None or response.will_close:
+                    raise RpcAuthenticationError("Wallet RPC supplied no usable Digest challenge")
 
             headers = self._request_headers(request, close=True)
             headers["Authorization"] = self._authorization(request, challenge)
@@ -400,7 +410,7 @@ class WalletRpcClient:
                 kind=kind,
                 outcome_unknown=mutation,
             ) from None
-        except OSError:
+        except (OSError, http.client.HTTPException):
             raise RpcTransportError(
                 "Unable to communicate with Wallet RPC",
                 kind="connection",
@@ -414,7 +424,7 @@ class WalletRpcClient:
             raise response_protocol_error("Wallet RPC response exceeds the configured size limit")
         try:
             decoded = json.loads(body.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError):
+        except (ValueError, RecursionError):
             raise response_protocol_error("Wallet RPC returned malformed JSON") from None
         if not isinstance(decoded, dict):
             raise response_protocol_error("Wallet RPC response must be a JSON object")

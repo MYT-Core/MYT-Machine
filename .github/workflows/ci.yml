@@ -19,14 +19,16 @@ jobs:
         python: ['3.10', '3.12', '3.13']
         cryptography: [floor, latest]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '24.21.0'
       - name: Install explicit locked optional BBS companion
         working-directory: companions/bbs
         run: npm ci --ignore-scripts --no-fund
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: ${{ matrix.python }}
           cache: pip
@@ -88,11 +90,13 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         node: ['24.20.0', '24.21.0']
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: ${{ matrix.node }}
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: '3.12'
       - name: Install exact companion
@@ -117,14 +121,16 @@ jobs:
     name: Dependency security audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '24.21.0'
       - name: Install explicit locked optional BBS companion
         working-directory: companions/bbs
         run: npm ci --ignore-scripts --no-fund
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: '3.12'
           cache: pip
@@ -150,22 +156,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, audit, bbs-runtime]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '24.21.0'
       - name: Install explicit locked optional BBS companion
         working-directory: companions/bbs
         run: npm ci --ignore-scripts --no-fund
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: '3.12'
-      - name: Update installation tooling
-        run: python -m pip install --disable-pip-version-check --upgrade pip setuptools
-      - name: Install build frontends
-        run: python -m pip install --disable-pip-version-check build twine
+      - name: Install hash-pinned release toolchain
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r .github/release-build-requirements.txt
       - name: Build distributions
-        run: python -m build . --outdir dist
+        run: python -m build . --no-isolation --outdir dist
       - name: Pack explicit optional companion
         working-directory: companions/bbs
         run: npm pack --ignore-scripts --pack-destination ../../dist
@@ -179,7 +186,7 @@ jobs:
 
           wheel = glob.glob('dist/*.whl')
           assert len(wheel) == 1, wheel
-          assert wheel[0].endswith('myt_machine_settlement-0.6.0rc1-py3-none-any.whl'), wheel
+          assert wheel[0].endswith('myt_machine_settlement-0.6.0rc2-py3-none-any.whl'), wheel
           with zipfile.ZipFile(wheel[0]) as archive:
               metadata_name = next(name for name in archive.namelist() if name.endswith('/METADATA'))
               metadata = archive.read(metadata_name).decode('utf-8')
@@ -189,30 +196,30 @@ jobs:
           PY
       - name: Verify source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/identity-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/identity-v1-test-vector.json$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/address-binding-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/identity-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/identity-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/address-binding-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/address-binding-v1-test-vector.json$'
       - name: Verify Phase 4D source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/payment-requests.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/payment-request-v1-test-vector.json$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/invoices.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/api-billing.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/payment-requests.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/payment-request-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/invoices.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/api-billing.md$'
       - name: Check distribution metadata
         run: python -m twine check dist/*.whl dist/*.tar.gz
       - name: Verify Phase 4E source distribution documentation
         run: |
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation-policy.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation-attestation-v1.md$'
-          tar -tzf dist/myt_machine_settlement-0.6.0rc1.tar.gz | grep '/docs/reputation-attestation-v1-test-vector.json$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/reputation.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/reputation-policy.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/reputation-attestation-v1.md$'
+          tar -tzf dist/myt_machine_settlement-0.6.0rc2.tar.gz | grep '/docs/reputation-attestation-v1-test-vector.json$'
       - name: Smoke-test installed wheel
         run: |
           python -m venv /tmp/myt-machine-wheel
           /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check --upgrade pip setuptools
           /tmp/myt-machine-wheel/bin/python -m pip install --disable-pip-version-check dist/*.whl
-          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.6.0rc1"
+          test "$(/tmp/myt-machine-wheel/bin/python -c 'import myt_machine; print(myt_machine.__version__)')" = "0.6.0rc2"
 
           work=$(mktemp -d)
           trap 'rm -rf "$work"' EXIT
@@ -307,8 +314,11 @@ jobs:
           (cd /tmp/myt-packed-bbs/package && npm ci --ignore-scripts --no-fund)
           cd /tmp
           /tmp/myt-machine-wheel/bin/python "$GITHUB_WORKSPACE/review/phase4f/clean_wheel_e2e.py" --node "$(command -v node)" --companion-entry /tmp/myt-packed-bbs/package/src/cli.mjs --vector "$GITHUB_WORKSPACE/docs/phase4f-header-vector.json"
-      - uses: actions/upload-artifact@v7
+      - name: Hash packaged releases
+        working-directory: dist
+        run: sha256sum -- *.whl *.tar.gz *.tgz > SHA256SUMS.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: myt-machine-v0.6.0-rc1
+          name: myt-machine-v0.6.0-rc2
           path: dist/*
           if-no-files-found: error

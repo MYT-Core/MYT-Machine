@@ -1,12 +1,18 @@
-"""Explicit authenticated loopback BBS companion. No process discovery/spawning."""
+"""Explicit TLS-authenticated loopback BBS companion. No process discovery/spawning."""
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import http.client
 import math
 import re
 import secrets
+import ssl
 from urllib.parse import urlsplit
+
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes
 
 from .disclosure_artifacts import PROFILE, SUITE, encoded, exact, strict_object
 from .disclosure_files import read_regular
@@ -20,11 +26,11 @@ class DisclosureBackendError(MytMachineError):
 class BbsBackend:
     """A capability grants local signing authority; never hand it to untrusted users."""
 
-    def __init__(self, *, url: str, token_file, timeout: float = 15):
+    def __init__(self, *, url: str, token_file, tls_cert_file, timeout: float = 15):
         try:
             endpoint = urlsplit(url)
             if (
-                endpoint.scheme != "http"
+                endpoint.scheme != "https"
                 or endpoint.hostname != "127.0.0.1"
                 or endpoint.username is not None
                 or endpoint.password is not None
@@ -44,10 +50,17 @@ class BbsBackend:
             token = read_regular(token_file, 65, private=True)
             if re.fullmatch(b"[0-9a-f]{64}\n", token) is None:
                 raise ValueError
-        except (TypeError, ValueError):
+            pinned = read_regular(tls_cert_file, 16384, private=True)
+            identity = x509.load_pem_x509_certificate(pinned)
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            context.minimum_version = ssl.TLSVersion.TLSv1_2
+            context.load_verify_locations(cadata=pinned.decode("ascii"))
+        except (TypeError, ValueError, OSError, MytMachineError):
             raise ConfigurationError(
                 "Invalid local BBS companion configuration"
             ) from None
+        self._tls_context = context
+        self._tls_fingerprint = identity.fingerprint(hashes.SHA256())
         self._port = endpoint.port
         self._token = token[:-1].decode("ascii")
         self._timeout = timeout
@@ -93,11 +106,17 @@ class BbsBackend:
         )
         if len(data) > 32768:
             raise DisclosureBackendError("BBS request size limit")
-        conn = http.client.HTTPConnection(
-            "127.0.0.1", self._port, timeout=self._timeout
+        conn = http.client.HTTPSConnection(
+            "127.0.0.1", self._port, timeout=self._timeout, context=self._tls_context
         )
         try:
-            # http.client neither follows redirects nor discovers system proxies.
+            # Check the exact leaf certificate before sending the bearer capability.
+            conn.connect()
+            peer = conn.sock.getpeercert(binary_form=True)
+            if not peer or not hmac.compare_digest(
+                hashlib.sha256(peer).digest(), self._tls_fingerprint
+            ):
+                raise ValueError
             conn.request(
                 "POST",
                 "/v1",

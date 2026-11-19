@@ -1,9 +1,8 @@
 # MYT Machine Settlement, Identity, Address Binding, and Billing SDK/CLI
 
-> v0.6.0-rc1 is a PUBLIC REVIEW CANDIDATE, not a production-approved release.
+> v0.6.0-rc2 is a public review candidate for integration testing and external review.
 > INDEPENDENT EXTERNAL CRYPTOGRAPHIC REVIEW: PENDING.
 > CRYPTO BACKEND EXTERNALLY QUALIFIED: NO.
-> Published for public, integration and adversarial testing and external review.
 > Phase 4F requires the explicitly optional Node companion; existing 4A-4E do not.
 > See [candidate protocol](docs/phase4f-protocol-v1.md),
 > [runtime boundary](docs/phase4f-runtime-architecture.md), and
@@ -33,9 +32,8 @@
   underlying settlement observations are not disclosed. Subject Machine ID and
   evaluator remain public; metadata is linkable, so this is not full anonymity.
 
-Version `0.6.0rc1` does not change MYT Core, consensus, emission, HF17, network
-parameters, blockchain state, or wallet RPC schemas. The Phase 4A, Phase 4B, Phase 4C and Phase 4D
-interfaces remain backward compatible, as do the Phase 4E interfaces.
+Version `0.6.0rc2` uses the existing MYT Core wallet RPC schemas. Phase 4F
+deployments need new TLS configuration and a database upgrade.
 
 ### v0.5.1 hardening
 
@@ -56,7 +54,7 @@ Uniqueness remains enforced inside the existing SQLite transaction. Private,
 service-owned directories and trusted local invoice databases remain required.
 
 The Wallet RPC User-Agent uses the same runtime version source as package
-metadata (`myt-machine/0.6.0rc1` in this RC). These hardening guarantees are
+metadata (`myt-machine/0.6.0rc2` in this RC). These hardening guarantees are
 retained. Phase 4F adds no spending paths or Python runtime dependencies;
 its optional Node companion is installed and started separately.
 
@@ -80,16 +78,15 @@ local-database trust and service-authorization limitations.
 
 ## Public review candidate installation
 
-Use the GitHub prerelease tagged `v0.6.0-rc1`, verify `SHA256SUMS.txt`, and install
-`myt_machine_settlement-0.6.0rc1-py3-none-any.whl` in an isolated environment.
-The separate `myt-core-bbs-companion-0.6.0-rc1.tgz` contains the optional Phase 4F
-companion and exact dependency lock; follow its README for protected local
-setup. No Node runtime or Node dependencies are hidden in the Python wheel.
-This RC is not published to PyPI. Existing 4A-4E commands do not require Node.
+For the RC2 build, verify `SHA256SUMS.txt` and install
+`myt_machine_settlement-0.6.0rc2-py3-none-any.whl` in an isolated environment.
+The separate `myt-core-bbs-companion-0.6.0-rc2.tgz` contains the optional Phase 4F
+companion and exact dependency lock. Follow its README for protected local
+setup. Phase 4A–4E use the Python package alone.
 
 For external review, use the fixed tag and exact commit recorded in its release
-notes, never moving `main` or latest HEAD. See the
-[review scope](docs/phase4f-official-candidate-review-scope.md).
+notes. The [original review scope](docs/phase4f-official-candidate-review-scope.md)
+records the RC1 baseline.
 
 ## Requirements
 
@@ -102,6 +99,14 @@ notes, never moving `main` or latest HEAD. See the
 
 Identity commands and `binding show` are fully offline. They do not require
 wallet RPC, a daemon, a blockchain, Testnet, Mainnet, or internet access.
+
+## Updating Phase 4F
+
+Update the Python SDK and Node companion together. The [companion setup](companions/bbs/README.md)
+covers certificate provisioning and client configuration. Stop Phase 4F
+processes and back up their databases before upgrading. The first opener
+migrates verifier state from schema 1 to schema 2, keeping consumed challenges
+and revocations. A rollback to schema 1 software requires the original backup.
 
 ## Install
 

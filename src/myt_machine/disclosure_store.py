@@ -33,12 +33,16 @@ _ROWS = {
     "revocations": "SELECT * FROM revocations",
 }
 APP_ID = 0x4D594446
-SCHEMA = (
+_SCHEMA_V1 = (
     "CREATE TABLE clock (id INTEGER PRIMARY KEY CHECK(id=1), floor INTEGER NOT NULL)",
     "CREATE TABLE requests (challenge TEXT PRIMARY KEY, artifact BLOB NOT NULL, digest TEXT NOT NULL, used INTEGER NOT NULL CHECK(used IN (0,1)))",
     "CREATE TABLE issuers (id TEXT PRIMARY KEY, artifact BLOB NOT NULL, digest TEXT NOT NULL, checked_at INTEGER NOT NULL)",
     "CREATE TABLE revocations (id TEXT PRIMARY KEY, artifact BLOB NOT NULL, digest TEXT NOT NULL)",
 )
+_REQUESTS_V2 = _SCHEMA_V1[1][:-1] + ", expires_at INTEGER NOT NULL)"
+_EXPIRY_INDEX = "CREATE INDEX requests_expiry ON requests(expires_at)"
+SCHEMA = (_SCHEMA_V1[0], _REQUESTS_V2, *_SCHEMA_V1[2:], _EXPIRY_INDEX)
+_SCHEMA_VERSION = 2
 
 
 class DisclosureStorageError(MytMachineError):
@@ -60,18 +64,18 @@ class DisclosureStore:
             else:
                 os.close(fd)
                 created = True
-            with self._transaction(initialize=created) as db:
+            with self._transaction(initialize=created, migrate=True) as db:
                 if created:
                     for sql in SCHEMA:
                         db.execute(sql)
                     db.execute("INSERT INTO clock VALUES (1,0)")
                     db.execute(f"PRAGMA application_id={APP_ID}")
-                    db.execute("PRAGMA user_version=1")
+                    db.execute(f"PRAGMA user_version={_SCHEMA_VERSION}")
         except OSError:
             raise ConfigurationError("Cannot open disclosure database") from None
 
     @contextmanager
-    def _transaction(self, *, initialize=False):
+    def _transaction(self, *, initialize=False, migrate=False):
         db = None
         try:
             private_parent(self.path)
@@ -97,6 +101,9 @@ class DisclosureStore:
             if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
                 raise DisclosureStorageError("Disclosure database changed")
             if not initialize:
+                if migrate and db.execute("PRAGMA user_version").fetchone()[0] == 1:
+                    self._validate(db, legacy=True)
+                    self._migrate(db)
                 self._validate(db)
             yield db
             db.commit()
@@ -110,10 +117,28 @@ class DisclosureStore:
                     db.rollback()
                 db.close()
 
-    def _validate(self, db):
+    @staticmethod
+    def _migrate(db):
+        db.execute("ALTER TABLE requests RENAME TO legacy_requests")
+        db.execute(_REQUESTS_V2)
+        for challenge, raw, checksum, used in db.execute(
+            "SELECT challenge,artifact,digest,used FROM legacy_requests"
+        ):
+            expiry = parse_disclosure(raw).as_dict()["expires_at"]
+            db.execute(
+                "INSERT INTO requests VALUES (?,?,?,?,?)",
+                (challenge, raw, checksum, used, expiry),
+            )
+        db.execute("DROP TABLE legacy_requests")
+        db.execute(_EXPIRY_INDEX)
+        db.execute(f"PRAGMA user_version={_SCHEMA_VERSION}")
+
+    def _validate(self, db, *, legacy=False):
+        schema = _SCHEMA_V1 if legacy else SCHEMA
+        version = 1 if legacy else _SCHEMA_VERSION
         if (
             db.execute("PRAGMA application_id").fetchone()[0] != APP_ID
-            or db.execute("PRAGMA user_version").fetchone()[0] != 1
+            or db.execute("PRAGMA user_version").fetchone()[0] != version
         ):
             raise DisclosureStorageError("Unknown disclosure database")
         actual = [
@@ -122,7 +147,7 @@ class DisclosureStore:
                 "SELECT sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' ORDER BY name"
             )
         ]
-        if actual != sorted(SCHEMA, key=lambda s: s.split()[2]):
+        if actual != sorted(schema, key=lambda s: s.split()[2]):
             raise DisclosureStorageError("Unexpected disclosure schema")
         if db.execute("PRAGMA quick_check(1)").fetchall() != [("ok",)]:
             raise DisclosureStorageError("Corrupt disclosure database")
@@ -130,14 +155,13 @@ class DisclosureStore:
         if len(clock) != 1 or clock[0][0] != 1:
             raise DisclosureStorageError("Corrupt disclosure clock")
         bounded_int(clock[0][1], "clock floor", 0, MAX_TIMESTAMP)
-        total = 0
         for table, kind in (
             ("requests", REQUEST),
             ("issuers", AUTH),
             ("revocations", REVOKE),
         ):
-            total += db.execute(_COUNT[table]).fetchone()[0]
-            if total > self.capacity:
+            count = db.execute(_COUNT[table]).fetchone()[0]
+            if count > self.capacity:
                 raise DisclosureStorageError("Disclosure capacity exceeded")
             for row in db.execute(_ROWS[table]):
                 try:
@@ -155,6 +179,8 @@ class DisclosureStore:
                         type(row[3]) is not int or row[3] not in (0, 1)
                     ):
                         raise InputError("Corrupt request use state")
+                    if kind == REQUEST and not legacy and row[4] != value["expires_at"]:
+                        raise InputError("Corrupt request expiry")
                     if kind == AUTH:
                         bounded_int(row[3], "issuer status time", 0, MAX_TIMESTAMP)
                 except (InputError, KeyError, IndexError, TypeError):
@@ -171,12 +197,8 @@ class DisclosureStore:
         db.execute("UPDATE clock SET floor=? WHERE id=1", (now,))
         return now
 
-    def _space(self, db):
-        total = sum(
-            db.execute(_COUNT[t]).fetchone()[0]
-            for t in ("requests", "issuers", "revocations")
-        )
-        if total >= self.capacity:
+    def _space(self, db, table):
+        if db.execute(_COUNT[table]).fetchone()[0] >= self.capacity:
             raise DisclosureStorageError("Disclosure capacity reached")
 
     def register(self, request):
@@ -188,10 +210,20 @@ class DisclosureStore:
             now = self._clock(db)
             if value["expires_at"] <= now:
                 raise InputError("Cannot register expired request")
-            self._space(db)
+            # An expired challenge cannot pass active(), even after a clock rollback.
+            db.execute("DELETE FROM requests WHERE expires_at<=?", (now,))
+            self._space(db, "requests")
             db.execute(
-                "INSERT INTO requests VALUES (?,?,?,0)",
-                (value["challenge"], request.raw, digest(request.raw)),
+                "INSERT INTO requests VALUES (?,?,?,0,?)",
+                (value["challenge"], request.raw, digest(request.raw), value["expires_at"]),
+            )
+
+    def discard_unpublished_request(self, request):
+        value = request.as_dict()
+        with self._transaction() as db:
+            db.execute(
+                "DELETE FROM requests WHERE challenge=? AND artifact=? AND used=0",
+                (value["challenge"], request.raw),
             )
 
     def refresh_issuer(self, authorization, *, expected_evaluator, revocations=()):
@@ -216,8 +248,7 @@ class DisclosureStore:
                 verify_statement(v, expected_evaluator)
                 s = v["statement"]
                 if (
-                    s["authorization_id"] != auth["id"]
-                    or s["bbs_key_id"] != auth["statement"]["bbs_key_id"]
+                    s["bbs_key_id"] != auth["statement"]["bbs_key_id"]
                     or s["network"] != auth["statement"]["network"]
                     or s["issued_at"] > now
                 ):
@@ -226,7 +257,7 @@ class DisclosureStore:
                     "SELECT artifact FROM revocations WHERE id=?", (v["id"],)
                 ).fetchone()
                 if existing is None:
-                    self._space(db)
+                    self._space(db, "revocations")
                     db.execute(
                         "INSERT INTO revocations VALUES (?,?,?)",
                         (v["id"], rev.raw, digest(rev.raw)),
@@ -237,7 +268,7 @@ class DisclosureStore:
                 "SELECT artifact FROM issuers WHERE id=?", (auth["id"],)
             ).fetchone()
             if existing is None:
-                self._space(db)
+                self._space(db, "issuers")
                 db.execute(
                     "INSERT INTO issuers VALUES (?,?,?,?)",
                     (auth["id"], authorization.raw, digest(authorization.raw), now),

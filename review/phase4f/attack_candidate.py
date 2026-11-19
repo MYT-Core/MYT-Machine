@@ -35,10 +35,10 @@ def wire(value):
 
 
 def consume(data):
-    raw, policy, path, url, token = data
+    raw, policy, path, url, token, cert = data
     return verify_reputation_presentation(
         presentation=parse_disclosure(raw), policy=DisclosurePolicy(**policy),
-        store=DisclosureStore(path), backend=BbsBackend(url=url, token_file=token),
+        store=DisclosureStore(path), backend=BbsBackend(url=url, token_file=token, tls_cert_file=cert),
     ).valid
 
 
@@ -130,7 +130,7 @@ class IndependentAttacks(unittest.TestCase):
 
     def test_16_processes(self):
         data = (self.proof.raw, asdict(self.policy), str(self.state.path),
-                self.companion.url, str(self.companion.token))
+                self.companion.url, str(self.companion.token), str(self.companion.tls_cert))
         with ProcessPoolExecutor(max_workers=16, mp_context=multiprocessing.get_context("spawn")) as pool:
             results = list(pool.map(consume, [data] * 16))
         self.assertEqual((results.count(True), results.count(False)), (1, 15))

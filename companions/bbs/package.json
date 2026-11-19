@@ -1,6 +1,6 @@
 {
   "name": "@myt-core/bbs-companion",
-  "version": "0.6.0-rc1",
+  "version": "0.6.0-rc2",
   "private": true,
   "type": "module",
   "description": "Optional local BBS service for the MYT Phase 4F public review candidate",

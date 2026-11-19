@@ -1,6 +1,6 @@
 # Phase 4F v1 candidate protocol
 
-PUBLIC REVIEW CANDIDATE v0.6.0-rc1 (Python 0.6.0rc1).
+PUBLIC REVIEW CANDIDATE v0.6.0-rc2 (Python 0.6.0rc2).
 CRYPTO BACKEND EXTERNALLY QUALIFIED = NO.
 INDEPENDENT EXTERNAL CRYPTOGRAPHIC REVIEW = PENDING.
 Public testing and review only; not production or deployment approval.
@@ -165,7 +165,10 @@ clock, independent policy, signed issuer authorization, locally checked freshnes
 and revocations, subject signature, native BBS proof, then a second clock/status
 check and atomic one-time consume. Backend errors roll back without retry.
 Completed consumption survives restart. Local status maximum age <=3600 seconds,
-default 300. A trusted operator explicitly refreshes status; this does not prove
+default 300. Expired requests are pruned on registration. Used requests remain
+stored until expiry, and issuer authorizations and revocations have separate
+capacity budgets. A signed key-wide revocation can be imported with a renewed
+authorization for the same evaluator, key and network. A trusted operator explicitly refreshes status; this does not prove
 that unreceived remote revocations do not exist.
 
 A compromised local administrator, database replacement/rollback, stolen issuer
